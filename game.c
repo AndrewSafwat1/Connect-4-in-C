@@ -281,4 +281,34 @@ void display_board(int width,int height){
         printf("-+");
 
     printf ("\n");
+       /* algorithm of playing game(2 players mode)*///ANDREW PUT THIS IN THE CHOICE OF CHOOSING 2 PLAYERS MODE
+   printf("hello ");
+   printf("user1, ");
+   printf("user2");
+   printf("\n let's start our game\n");
+   play(width,height);
+
+}
+
+void play(int width,int height)
+{
+    int turn,col;
+    for(turn=1;turn<=width*height;turn++)
+    {
+        if(turn%2==1)
+        {
+
+            printf("\r your turn player 1 , choose a column from 1 to %d to put your x \b \n",width);
+            scanf("%d",&col);
+        }
+        else
+        {
+            fflush(stdout);
+            printf("\r your turn player 2 , choose a column from 1 to %d to put your o \b \n ",width);
+            scanf("%d",&col);
+
+        }
+
+    }
+
 }
