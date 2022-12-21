@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <limits.h>
 
-void greet_players();
+void greet_players(int mode);
 int choices_mode();
 int prompt_mode();
 void play(int width,int height);
@@ -29,12 +29,13 @@ int main()
         mode = prompt_mode();
         if (mode == 1) //vs computer
         {
+            greet_players(1);
 
         }
         else if (mode == 2) // 2 players
         {
             gotoxy(0, 0);
-            greet_players();
+            greet_players(2);
 
             printf("please enter the height and the width of your connect 4 board (separated by a space):"); //Prompting width and height
             scanf("%d %d", &width, &height);
@@ -278,11 +279,17 @@ void delete_box(){
 }
 
 int prompt_mode(){
+    /*
+    similar to main menu but it differs only on return value which has range of 1 - 3
+    choice 1: to play vs computer
+    choice 2: to play vs player
+    choice 3: to return to main menu
+    */
     int choice;
 
     draw_box_main(); // to draw the menu
 
-    choice = choices_mode();
+    choice = choices_mode(); // to get the choice
 
     delete_box(); // clear the console
 
@@ -367,19 +374,32 @@ int choices_mode(){
     return position;
 }
 
-void greet_players(){
-    printf("Hello ");
-    printf("user1, user2\n");
+void greet_players(int mode){
+    /*
+    to say hello to the players
+    its parameter -mode- has only two values: 1- to greet the player in single player mode
+                                              2- to greet the two players in multiplayer mode
+     */
+    printf("Hello user1, ");
+    if(mode == 1)
+    {
+        printf("\n");
+    }
+    else
+    {
+        printf("user2\n");
+    }
     printf("let's start our game\n");
 }
 
 
 void display_board(int width,int height){
 
-    /*display board function: display the game board for the user*/
-    /*function parameters: 1- Width of the board (number of columns),
-                           2- Height of the board (number of rows)*/
-
+    /*
+    display board function: display the game board for the user
+    function parameters: 1- Width of the board (number of columns),
+                           2- Height of the board (number of rows)
+    */
     int i,j;
 
     for (i=0; i < width; i++) {
