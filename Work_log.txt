@@ -9,5 +9,9 @@ progress: created the new game menu with choices:
 	   to play vs computer.
 	2- multiplayer --> greet the two players then prompt board width and height.
 	3- main menu --> to return to main menu.
+	
+date: 2022 - 12 - 21
+collaborator name: Andrew Safwat
+progress: documented the greet and game mode functions.
 
 
