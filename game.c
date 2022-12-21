@@ -5,9 +5,13 @@
 #include <stdbool.h>
 #include <limits.h>
 
+void greet_players();
+int choices_mode();
+int prompt_mode();
+void play(int width,int height);
 int choices();
 void delete_box();
-void draw_box();
+void draw_box_main();
 void gotoxy(int x,int y);
 void display_board(int width,int height);
 int main_menu();
@@ -15,29 +19,51 @@ int main_menu();
 //////////main program
 int main()
 {
-    int width, height, choice;
+    int width, height, choice, mode;
 
     choice = main_menu();
 
 
     if (choice == 1) //////New game
     {
-        gotoxy(0, 0);
-        printf("please enter the size of your connect four game:");//Prompting width and height
-        scanf("%d %d", &width, &height);
-
-         /* this will be changed to read from file XML after initializing it but
-        for now let's cover every thing*/
-        /*validation on size not exceeding integer borders or negative*/
-
-        while(width <= 0 || width > INT_MAX || height <= 0 || height > INT_MAX)
+        mode = prompt_mode();
+        if (mode == 1) //vs computer
         {
-            printf("select an appropriate size: ");
+
+        }
+        else if (mode == 2) // 2 players
+        {
+            gotoxy(0, 0);
+            greet_players();
+
+            printf("please enter the height and the width of your connect 4 board (separated by a space):"); //Prompting width and height
             scanf("%d %d", &width, &height);
+
+
+
+             /* this will be changed to read from file XML after initializing it but
+            for now let's cover every thing*/
+            /*validation on size not exceeding integer borders or negative*/
+
+            while(width <= 0 || width > INT_MAX || height <= 0 || height > INT_MAX)
+            {
+                printf("select an appropriate size: ");
+                scanf("%d %d", &width, &height);
+            }
+            //initializing board array
+            char board[height * 2 + 1][width * 2 + 2];
+
+            //algorithm of printing
+
+            display_board(width, height);
+        }
+        else // to main menu
+        {
+            main();
         }
 
-        //algorithm of printing
-        display_board(width, height);
+
+
     }
     else if(choice == 2) // Load game
     {
@@ -85,7 +111,7 @@ int main_menu(){
     */
     int choice;
 
-    draw_box(); // to draw the menu
+    draw_box_main(); // to draw the menu
 
     choice = choices();
 
@@ -199,7 +225,7 @@ void ShowConsoleCursor(bool showFlag){
     SetConsoleCursorInfo(out, &cursorInfo);
 }
 
-void draw_box(){
+void draw_box_main(){
     /*
     responsible for creating the border of the main menu window
     hint: check extended ASCII (DOS) code for the values: 201, 205, 187, 186, 200, 188 --> in (ASCII_Extended.png) attached with this file
@@ -251,6 +277,102 @@ void delete_box(){
     system("cls");
 }
 
+int prompt_mode(){
+    int choice;
+
+    draw_box_main(); // to draw the menu
+
+    choice = choices_mode();
+
+    delete_box(); // clear the console
+
+    return choice;
+}
+
+int choices_mode(){
+    int position = 1, choose;
+    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    ShowConsoleCursor(false); //to hide white dash in console
+
+    do{
+        SetConsoleTextAttribute(console, 15); // initial form of the menu
+        gotoxy(40, 11);
+        printf(" 1] Single player             ");
+
+        gotoxy(40, 12);
+        printf(" 2] Multiplayer               ");
+
+        gotoxy(40, 13);
+        printf(" 3] Main menu                 ");
+
+        switch(position)
+        {
+
+
+            case 1: SetConsoleTextAttribute(console, 240); // for highlighting the choice
+                    gotoxy(40, 11);
+                    printf(" 1] Single player             ");
+                    break;
+
+            case 2: SetConsoleTextAttribute(console, 240);
+                    gotoxy(40, 12);
+                    printf(" 2] Multiplayer               ");
+                    break;
+
+            case 3: SetConsoleTextAttribute(console, 240);
+                    gotoxy(40, 13);
+                    printf(" 3] Main menu                 ");
+                    break;
+
+
+            case 0: position += 3;
+                    SetConsoleTextAttribute(console, 240);
+                    gotoxy(40, 13);
+                    printf(" 3] Main menu               \n");
+                    break;
+
+            case 4: position -= 3;
+                    SetConsoleTextAttribute(console, 240);
+                    gotoxy(40, 11);
+                    printf(" 1] Single player             ");
+                    break;
+        }
+
+        choose = getch();
+
+        switch(choose)
+        {
+            case -32:choose = getch();
+                     break;
+
+            case 80: position ++;
+                     break;
+
+            case 72: position --;
+                     break;
+        }
+
+    }while(choose != 13 && choose != 27);
+
+    if(choose == 27)
+    {
+        position = 3;
+    }
+
+    SetConsoleTextAttribute(console, 15); // get the console back to its default mode
+
+    ShowConsoleCursor(true); // to get the white dash in the console back
+
+    return position;
+}
+
+void greet_players(){
+    printf("Hello ");
+    printf("user1, user2\n");
+    printf("let's start our game\n");
+}
+
 
 void display_board(int width,int height){
 
@@ -282,10 +404,7 @@ void display_board(int width,int height){
 
     printf ("\n");
        /* algorithm of playing game(2 players mode)*///ANDREW PUT THIS IN THE CHOICE OF CHOOSING 2 PLAYERS MODE
-   printf("hello ");
-   printf("user1, ");
-   printf("user2");
-   printf("\n let's start our game\n");
+
    play(width,height);
 
 }
