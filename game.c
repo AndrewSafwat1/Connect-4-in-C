@@ -4,21 +4,20 @@
 #include <windows.h>
 #include <stdbool.h>
 #include <limits.h>
-<<<<<<< HEAD
+
 void printboard(int height, int width, int arr[height][width]);
 void play_display(int height, int width);
-=======
+
 
 void greet_players(int mode);
 int choices_mode();
 int prompt_mode();
 void play(int width,int height);
->>>>>>> 533094a0a3eccd4ab3512b8b2f6e8c80c7b0d496
 int choices();
 void delete_box();
 void draw_box_main();
 void gotoxy(int x,int y);
-void display_board(int width,int height);
+void display_board(int width,int height); //DELETED
 int main_menu();
 
 //////////main program
@@ -31,26 +30,7 @@ int main()
 
     if (choice == 1) //////New game
     {
-<<<<<<< HEAD
-        gotoxy(0, 0);
-        printf("please enter the size of your connect four game:");//Prompting width and height
-        scanf("%d %d", &height, &width);// i change this
 
-         /* this will be changed to read from file XML after initializing it but
-        for now let's cover every thing*/
-        /*validation on size not exceeding integer borders or negative*/
-
-        while(width <= 0 || width > INT_MAX || height <= 0 || height > INT_MAX)
-        {
-            printf("select an appropriate size: ");
-            scanf("%d %d", &height, &width);// i change this
-        }
-
-        //algorithm of printing
-        //display_board(width, height);
-        //new algorithm of printing
-        play_display(height,width);
-=======
         mode = prompt_mode();
         if (mode == 1) //vs computer
         {
@@ -63,9 +43,7 @@ int main()
             greet_players(2);
 
             printf("please enter the height and the width of your connect 4 board (separated by a space):"); //Prompting width and height
-            scanf("%d %d", &width, &height);
-
-
+            scanf("%d %d", &height, &width);// i change this
 
              /* this will be changed to read from file XML after initializing it but
             for now let's cover every thing*/
@@ -74,14 +52,22 @@ int main()
             while(width <= 0 || width > INT_MAX || height <= 0 || height > INT_MAX)
             {
                 printf("select an appropriate size: ");
-                scanf("%d %d", &width, &height);
+                scanf("%d %d", &height, &width);// i change this
             }
-            //initializing board array
-            char board[height * 2 + 1][width * 2 + 2];
+
+            //algorithm of printing
+            //display_board(width, height);
+            //new algorithm of printing
+            play_display(height,width);
+
+             /* this will be changed to read from file XML after initializing it but
+            for now let's cover every thing*/
+            /*validation on size not exceeding integer borders or negative*/
+
 
             //algorithm of printing
 
-            display_board(width, height);
+            //display_board(width, height); //DELETED
         }
         else // to main menu
         {
@@ -90,7 +76,7 @@ int main()
 
 
 
->>>>>>> 533094a0a3eccd4ab3512b8b2f6e8c80c7b0d496
+
     }
     else if(choice == 2) // Load game
     {
@@ -304,16 +290,10 @@ void delete_box(){
     system("cls");
 }
 
-<<<<<<< HEAD
-//will not be used again just leave it if we need it temporary
-/*
-void display_board(int width,int height){
 
-    /*display board function: display the game board for the user*/
-    /*function parameters: 1- Width of the board (number of columns),
-                           2- Height of the board (number of rows)*/
-/*
-=======
+
+
+
 int prompt_mode(){
     /*
     similar to main menu but it differs only on return value which has range of 1 - 3
@@ -429,50 +409,14 @@ void greet_players(int mode){
 }
 
 
-void display_board(int width,int height){
-
-    /*
-    display board function: display the game board for the user
-    function parameters: 1- Width of the board (number of columns),
-                           2- Height of the board (number of rows)
-    */
->>>>>>> 533094a0a3eccd4ab3512b8b2f6e8c80c7b0d496
-    int i,j;
-
-    for (i=0; i < width; i++) {
-        printf ("+");
-
-        for (j=0; j < height; j++)
-            printf("-+");
-
-        printf ("\n");
-        printf ("|");
-
-        for (j=0; j < height; j++)
-            printf(" |");
-
-        printf ("\n");
-    }
-
-    printf ("+");
-
-    for (j=0; j < height; j++)
-        printf("-+");
-
-    printf ("\n");
-<<<<<<< HEAD
-}
-*/
 // function to play and display board after each turn it take two arguments :height and width
 void play_display(int height, int width)
 {
-    int col1,col2; // will stand for columns of two players
+    int col1,col2, i, j; //col 1, 2: will stand for columns of two players , while i, j are iterators
     long long int k=width*height; //number of moves
     int moves[height][width];  //array to store moves
     int maxcolsize[width];   // array to check maxsize //all its elements will take value of height and will be decreased if column chosen
 
-
-   int i,j;
    for(i=0;i<height;i++)
    {
        for(j=0;j<width;j++)
@@ -481,6 +425,7 @@ void play_display(int height, int width)
        }
 
    }
+
    for(i=0;i<width;i++)
    {
        maxcolsize[i]=height;  // set all values of it to value of height as mentioned
@@ -494,7 +439,7 @@ void play_display(int height, int width)
 
        if(turn%2==1) // odd turns player 1
        {
-            printf("\n player1,please choose column from 0 to %d:",width-1);
+            printf("\nplayer1,please choose column from 0 to %d:",width-1);
        scanf("%d",&col1);
            while(maxcolsize[col1]<0||col1>width-1||col1<0)// validation on column index
             {
@@ -530,13 +475,10 @@ void play_display(int height, int width)
    }
 
 
-
-
-=======
        /* algorithm of playing game(2 players mode)*///ANDREW PUT THIS IN THE CHOICE OF CHOOSING 2 PLAYERS MODE
 
-   play(width,height);
->>>>>>> 533094a0a3eccd4ab3512b8b2f6e8c80c7b0d496
+
+
 
 }
 
