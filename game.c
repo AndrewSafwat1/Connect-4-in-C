@@ -4,6 +4,10 @@
 #include <windows.h>
 #include <stdbool.h>
 #include <limits.h>
+#include<time.h>
+
+void display_time(clock_t start,clock_t end);
+
 
 void printboard(int height, int width, int arr[height][width]);
 void play_display(int height, int width);
@@ -21,6 +25,10 @@ int main_menu();
 //////////main program
 int main()
 {
+    clock_t start, end;
+
+    start = clock(); // defining start time
+
     int width, height, choice, mode;
 
     choice = main_menu();
@@ -60,6 +68,9 @@ int main()
             //new algorithm of printing
             play_display(height,width);
 
+            end = clock(); // defining end time
+            display_time(start,end);  // display the time
+
              /* this will be changed to read from file XML after initializing it but
             for now let's cover every thing*/
             /*validation on size not exceeding integer borders or negative*/
@@ -90,6 +101,8 @@ int main()
     {
         return 0;
     }
+
+
 
 
     return 0;
@@ -512,5 +525,43 @@ void printboard(int height, int width, int arr[height][width]) //this fn will be
 
 }
 
-// my play fn takes inputs but the display some times don't change
-// it is better to test game by yourself to understand it more
+void display_time(clock_t start,clock_t end) // fn to display time in game ///its calling position in code may be changed
+                                               // but for now leave it
+ // to use fn properly define start in beginning of code and define end at end of any process then call fn
+{
+     double duration = ((double)end - start)/CLOCKS_PER_SEC;  // duration as a double endtime-start time
+     int dur;
+     dur=duration;   // assigning it to integer to make the operation
+     typedef struct
+     {  // defining time struct
+       int hours;
+       int minutes;
+       int seconds;
+     } time;
+
+    time t;  // t of variable time
+    int c1;  // helping variable in calculation
+
+    /////calculation of time:
+
+    t.hours = dur / 3600;
+    c1= dur % 3600;
+    t.minutes = c1 / 60;
+    t.seconds = c1 % 60;
+
+    //// printing time:
+
+    printf("\ntime taken in game:\n");
+
+    if(t.hours > 0)
+    {
+        printf("hours : %d", t.hours);
+        printf("\t");
+    }
+    if(t.minutes > 0)
+    {
+        printf("minutes : %d", t.minutes);
+        printf("\t");
+    }
+    printf("seconds : %d", t.seconds);
+}

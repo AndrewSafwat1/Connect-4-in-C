@@ -30,4 +30,8 @@ date: 2022 - 12 - 22
 collaborator name: Andrew Safwat 
 progress: SOLVED the display problem
 
+date: 2022 - 12 - 22
+collaborator name: Mahmoud abdelghany
+progress: implemented time functions to the game 
+
 
