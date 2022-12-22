@@ -14,4 +14,14 @@ date: 2022 - 12 - 21
 collaborator name: Andrew Safwat
 progress: documented the greet and game mode functions.
 
+date: 2022 - 12 - 21 
+collaborator name: Mahmoud Abdelghany
+progress: created the play display and print board functions
+
+date: 2022 - 12 - 22
+collaborator name: Andrew Safwat
+progress: removed some functions that are not needed
+	  PROBLEMS found: program cannot handle when user
+	                  enter number of rows and columns separated by "X" OR "x" OR ","
+
 
