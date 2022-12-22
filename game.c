@@ -7,8 +7,6 @@
 
 void printboard(int height, int width, int arr[height][width]);
 void play_display(int height, int width);
-
-
 void greet_players(int mode);
 int choices_mode();
 int prompt_mode();
@@ -35,12 +33,14 @@ int main()
         if (mode == 1) //vs computer
         {
             greet_players(1);
+            ShowConsoleCursor(true); // to get the white dash in the console back
 
         }
         else if (mode == 2) // 2 players
         {
             gotoxy(0, 0);
             greet_players(2);
+            ShowConsoleCursor(true); // to get the white dash in the console back
 
             printf("please enter the height and the width of your connect 4 board (separated by a space):"); //Prompting width and height
             scanf("%d %d", &height, &width);// i change this
@@ -145,7 +145,7 @@ int choices(){
     do{
         SetConsoleTextAttribute(console, 15); // initial form of the menu
         gotoxy(40, 11);
-        printf(" 1] New game.                 ");
+        printf(" 1] New game                  ");
 
         gotoxy(40, 12);
         printf(" 2] Load game                 ");
@@ -163,7 +163,7 @@ int choices(){
 
             case 1: SetConsoleTextAttribute(console, 240); // for highlighting the choice
                     gotoxy(40, 11);
-                    printf(" 1] New game.                 ");
+                    printf(" 1] New game                  ");
                     break;
 
             case 2: SetConsoleTextAttribute(console, 240);
@@ -217,7 +217,7 @@ int choices(){
 
     SetConsoleTextAttribute(console, 15); // get the console back to its default mode
 
-    ShowConsoleCursor(true); // to get the white dash in the console back
+
 
     return position;
 
@@ -352,7 +352,7 @@ int choices_mode(){
             case 0: position += 3;
                     SetConsoleTextAttribute(console, 240);
                     gotoxy(40, 13);
-                    printf(" 3] Main menu               \n");
+                    printf(" 3] Main menu                 ");
                     break;
 
             case 4: position -= 3;
@@ -385,7 +385,7 @@ int choices_mode(){
 
     SetConsoleTextAttribute(console, 15); // get the console back to its default mode
 
-    ShowConsoleCursor(true); // to get the white dash in the console back
+
 
     return position;
 }
@@ -428,7 +428,7 @@ void play_display(int height, int width)
 
    for(i=0;i<width;i++)
    {
-       maxcolsize[i]=height;  // set all values of it to value of height as mentioned
+       maxcolsize[i]=height -1;  // set all values of it to value of height as mentioned
    }
 
    int turn=1;
@@ -448,26 +448,26 @@ void play_display(int height, int width)
                  scanf("%d",&col1);
             }
 
-           moves[maxcolsize[col1]][col1]=1; // if player 1 choose a column the row index of it will start from height and will be decreased till zero
+             moves[maxcolsize[col1]][col1]=1; // if player 1 choose a column the row index of it will start from height and will be decreased till zero
              printboard(height,width,moves); // print board after paying
-           maxcolsize[col1]--;
-           turn++; // increase turns
+             maxcolsize[col1]--;
+             turn++; // increase turns
        }
        else
        {
-            printf("\n player2, choose column from 0 to %d:",width-1);
+            printf("\nplayer2, choose column from 0 to %d:",width-1);
             scanf("%d",&col2);
             while(maxcolsize[col2]<0||col2>width-1||col2<0)
             {
                  printf("this column is no longer valid\n");
                  printf("please choose another one: ");
-                 scanf("%d",&col2);
+                 scanf("%d", &col2);
             }
-           moves[maxcolsize[col2]][col2]=-1;
+           moves[maxcolsize[col2]][col2] = -1;
 
-             printboard(height,width,moves);
+           printboard(height, width, moves);
 
-            maxcolsize[col2]--;
+           maxcolsize[col2]--;
            turn++;
            /* system("cls"); */
        }
@@ -488,21 +488,22 @@ void printboard(int height, int width, int arr[height][width]) //this fn will be
 {
 
     int i,j;
-    for(i=0;i<height;i++)
+    for(i = 0; i < height; i++)
     {
+
         printf("\n************************\n");
-        for(j=0;j<width;j++)
+        for(j = 0; j < width; j++)
         {
-            if(arr[i][j]==0)
+            if(arr[i][j] == 0)
             {
                 printf("| |");
             }
-            else if(arr[i][j]==1)
+            else if(arr[i][j] == 1)
             {
                 printf("|X|");
             }
 
-           else if(arr[i][j]==-1)
+           else if(arr[i][j] == -1)
            {
                 printf("|O|");
            }
