@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <limits.h>
 #include<time.h>
+void play_display_with_computer(int height, int width);
 
 void display_time(clock_t start,clock_t end);
 
@@ -40,10 +41,42 @@ int main()
         mode = prompt_mode();
         if (mode == 1) //vs computer
         {
+            gotoxy(0, 0);
             greet_players(1);
             ShowConsoleCursor(true); // to get the white dash in the console back
+             printf("please enter the height and the width of your connect 4 board (separated by a space):"); //Prompting width and height
+            scanf("%d %d", &height, &width);// i change this
 
+             /* this will be changed to read from file XML after initializing it but
+            for now let's cover every thing*/
+            /*validation on size not exceeding integer borders or negative*/
+
+            while(width <= 0 || width > INT_MAX || height <= 0 || height > INT_MAX)
+            {
+                printf("select an appropriate size: ");
+                scanf("%d %d", &height, &width);// i change this
+            }
+
+            //algorithm of printing
+            //display_board(width, height);
+            //new algorithm of printing
+            play_display_with_computer(height,width);
+
+            end = clock(); // defining end time
+            display_time(start,end);  // display the time
+
+             /* this will be changed to read from file XML after initializing it but
+            for now let's cover every thing*/
+            /*validation on size not exceeding integer borders or negative*/
+
+
+            //algorithm of printing
+
+            //display_board(width, height); //DELETED
         }
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         else if (mode == 2) // 2 players
         {
             gotoxy(0, 0);
@@ -564,4 +597,75 @@ void display_time(clock_t start,clock_t end) // fn to display time in game ///it
         printf("\t");
     }
     printf("seconds : %d", t.seconds);
+}
+
+void play_display_with_computer(int height, int width)
+{
+    int col1,col2, i, j; //col 1, 2: will stand for columns of two players , while i, j are iterators
+    long long int k=width*height; //number of moves
+    int moves[height][width];  //array to store moves
+    int maxcolsize[width];   // array to check maxsize //all its elements will take value of height and will be decreased if column chosen
+
+   for(i=0;i<height;i++)
+   {
+       for(j=0;j<width;j++)
+       {
+           moves[i][j]=0; //set all moves to default zero
+       }
+
+   }
+
+   for(i=0;i<width;i++)
+   {
+       maxcolsize[i]=height -1;  // set all values of it to value of height as mentioned
+   }
+
+   int turn=1;
+     printboard(height,width,moves); //print standrd board
+
+   while(k>0)
+   {
+
+       if(turn%2==1) // odd turns player 1
+       {
+            printf("\n YOUR TURN,please choose column from 0 to %d:",width-1);
+       scanf("%d",&col1);
+           while(maxcolsize[col1]<0||col1>width-1||col1<0)// validation on column index
+            {
+                 printf("this column is no longer valid\n");
+                 printf("please choose another one: ");
+                 scanf("%d",&col1);
+            }
+
+             moves[maxcolsize[col1]][col1]=1; // if player 1 choose a column the row index of it will start from height and will be decreased till zero
+             printboard(height,width,moves); // print board after paying
+             maxcolsize[col1]--;
+             turn++; // increase turns
+       }
+       else
+       {
+            printf("\n COMPUTER'S TURN: ");
+            sleep(1);
+                col2=rand();
+            while(maxcolsize[col2]<0||col2>width-1||col2<0)
+            {
+                col2=rand();
+            }
+           moves[maxcolsize[col2]][col2] = -1;
+
+           printboard(height, width, moves);
+
+           maxcolsize[col2]--;
+           turn++;
+           /* system("cls"); */
+       }
+       k--; //decrease k till zero which will indicate that board is complete
+   }
+
+
+       /* algorithm of playing game(2 players mode)*///ANDREW PUT THIS IN THE CHOICE OF CHOOSING 2 PLAYERS MODE
+
+
+
+
 }
