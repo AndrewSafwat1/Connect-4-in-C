@@ -5,6 +5,15 @@
 #include <stdbool.h>
 #include <limits.h>
 #include<time.h>
+
+int horizontal_check(int height, int width, int arr[height][width], int xo, int, int);
+int vertical_check(int height, int width, int arr[height][width], int xo, int, int);
+int diagonal_check_45(int height, int width, int arr[height][width], int xo, int, int);
+int diagonal_check_135(int height, int width, int arr[height][width], int xo, int, int);
+
+void check_score(int height, int width, int arr[height][width], int xo);
+
+
 void play_display_with_computer(int height, int width);
 
 void display_time(clock_t start,clock_t end);
@@ -95,6 +104,11 @@ int main()
                 printf("select an appropriate size: ");
                 scanf("%d %d", &height, &width);// i change this
             }
+
+            sleep(1);
+            system("cls");
+
+
 
             //algorithm of printing
             //display_board(width, height);
@@ -458,51 +472,69 @@ void greet_players(int mode){
 // function to play and display board after each turn it take two arguments :height and width
 void play_display(int height, int width)
 {
-    int col1,col2, i, j; //col 1, 2: will stand for columns of two players , while i, j are iterators
-    long long int k=width*height; //number of moves
+    int col1, col2, i, j; //col 1, 2: will stand for columns of two players , while i, j are iterators
+    long long int k = width * height; //number of moves
     int moves[height][width];  //array to store moves
     int maxcolsize[width];   // array to check maxsize //all its elements will take value of height and will be decreased if column chosen
 
-   for(i=0;i<height;i++)
+   for(i = 0; i < height; i++)
    {
-       for(j=0;j<width;j++)
+       for(j = 0; j < width; j++)
        {
            moves[i][j]=0; //set all moves to default zero
        }
 
    }
 
-   for(i=0;i<width;i++)
+   for(i = 0; i < width; i++)
    {
-       maxcolsize[i]=height -1;  // set all values of it to value of height as mentioned
+       maxcolsize[i] = height -1;  // set all values of it to value of height as mentioned
    }
 
    int turn=1;
-     printboard(height,width,moves); //print standrd board
+   printboard(height, width, moves); //print standrd board
 
-   while(k>0)
+
+
+   while(k > 0)
    {
 
-       if(turn%2==1) // odd turns player 1
+       if(turn % 2 == 1) // odd turns player 1
        {
-            printf("\nplayer1,please choose column from 0 to %d:",width-1);
-       scanf("%d",&col1);
-           while(maxcolsize[col1]<0||col1>width-1||col1<0)// validation on column index
+
+
+           printf("\nplayer1,please choose column from 0 to %d:", width - 1);
+           scanf("%d",&col1);
+           while(maxcolsize[col1] < 0 || col1 > width-1 || col1 < 0)// validation on column index
             {
                  printf("this column is no longer valid\n");
                  printf("please choose another one: ");
-                 scanf("%d",&col1);
+                 scanf("%d", &col1);
             }
 
-             moves[maxcolsize[col1]][col1]=1; // if player 1 choose a column the row index of it will start from height and will be decreased till zero
+             moves[maxcolsize[col1]][col1] = 1; // if player 1 choose a column the row index of it will start from height and will be decreased till zero
+
+
+             Sleep(0.5);
+             system("cls");
+
              printboard(height,width,moves); // print board after paying
+
+             check_score(height, width, moves, 1);
+
              maxcolsize[col1]--;
+
+
              turn++; // increase turns
+
+
        }
        else
        {
+
             printf("\nplayer2, choose column from 0 to %d:",width-1);
             scanf("%d",&col2);
+
             while(maxcolsize[col2]<0||col2>width-1||col2<0)
             {
                  printf("this column is no longer valid\n");
@@ -511,21 +543,19 @@ void play_display(int height, int width)
             }
            moves[maxcolsize[col2]][col2] = -1;
 
+           system("cls");
+
            printboard(height, width, moves);
 
+           check_score(height, width, moves, -1);
+
            maxcolsize[col2]--;
+
            turn++;
-           /* system("cls"); */
+
        }
        k--; //decrease k till zero which will indicate that board is complete
    }
-
-
-       /* algorithm of playing game(2 players mode)*///ANDREW PUT THIS IN THE CHOICE OF CHOOSING 2 PLAYERS MODE
-
-
-
-
 }
 
 
@@ -621,7 +651,7 @@ void play_display_with_computer(int height, int width)
    }
 
    int turn=1;
-     printboard(height,width,moves); //print standrd board
+     printboard(height,width,moves); //print standard board
 
    while(k>0)
    {
@@ -644,9 +674,11 @@ void play_display_with_computer(int height, int width)
        }
        else
        {
-            printf("\n COMPUTER'S TURN: ");
+            ShowConsoleCursor(false);
+            printf("\n COMPUTER'S TURN ");
+
             sleep(1);
-                col2=rand();
+            col2=rand();
             while(maxcolsize[col2]<0||col2>width-1||col2<0)
             {
                 col2=rand();
@@ -657,15 +689,118 @@ void play_display_with_computer(int height, int width)
 
            maxcolsize[col2]--;
            turn++;
-           /* system("cls"); */
+           ShowConsoleCursor(true);
+
+           Sleep(1);
+           system("cls");
        }
        k--; //decrease k till zero which will indicate that board is complete
    }
 
-
-       /* algorithm of playing game(2 players mode)*///ANDREW PUT THIS IN THE CHOICE OF CHOOSING 2 PLAYERS MODE
-
-
-
-
 }
+
+void check_score(int height, int width, int arr[height][width], int xo)
+{
+    int score = 0, count;
+
+    for(int i = height -1; i >= 0;i--)
+    {
+        for(int j = width -1; j>= 0; j--)
+        {
+
+            count = horizontal_check(height, width, arr, xo, i, j); //height then width (columns) then array - count should be 4 !!!!!
+            if(count / 4 >= 1)
+            {
+                score += (count -3);
+            }
+
+            count = vertical_check(height, width, arr, xo, i, j);
+            if(count / 4 >= 1)
+            {
+                score += (count -3);
+            }
+
+            count = diagonal_check_45 (height, width, arr, xo, i, j);
+            if(count / 4 >= 1)
+            {
+                score += (count -3);
+            }
+
+            count = diagonal_check_135 (height, width, arr, xo, i, j);
+            if(count / 4 >= 1)
+            {
+                score += (count -3);
+            }
+        }
+    }
+
+/////////////////WE NEEEEED TO DISPLAY SCORESSSS
+}
+
+
+
+int horizontal_check(int height, int width, int arr[height][width], int xo, int i, int j) //parameters : 1- rows,  2 -columns , 3 - array ,
+//4-x or O value (1 or -1) ,5, 6:  i and j from nested for loop commented above
+{
+    int count;
+    if(i < 0 || j < 0 || arr[i][j] == xo * -1 || arr[i][j] == 0 ) //base cases
+    {
+        count = 0;
+    }
+    else
+    {
+        count = 1 +  horizontal_check(height, width, arr, xo, i, j-1);
+    }
+
+    return count;
+}
+
+int vertical_check(int height, int width, int arr[height][width], int xo, int i, int j) //parameters : 1- rows,  2 -columns , 3 - array ,
+//4-x or O value (1 or -1) ,5, 6:  i and j from nested for loop commented above
+{
+    int count;
+    if(i < 0 || j < 0 || arr[i][j] == xo * -1 || arr[i][j] == 0 ) //base cases
+    {
+        count = 0;
+    }
+    else
+    {
+        count = 1 +  vertical_check(height, width, arr, xo, i-1, j);
+    }
+
+    return count;
+}
+
+int diagonal_check_135(int height, int width, int arr[height][width], int xo, int i, int j) //parameters : 1- rows,  2 -columns , 3 - array ,
+//4-x or O value (1 or -1) ,5, 6:  i and j from nested for loop commented above
+{
+    int count;
+    if(i < 0 || j < 0 || arr[i][j] == xo * -1 || arr[i][j] == 0 ) //base cases
+    {
+        count = 0;
+    }
+    else
+    {
+        count = 1 +  diagonal_check_135(height, width, arr, xo, i-1, j-1);
+    }
+
+    return count;
+}
+
+int diagonal_check_45(int height, int width, int arr[height][width], int xo, int i, int j) //parameters : 1- rows,  2 -columns , 3 - array ,
+//4-x or O value (1 or -1) ,5, 6:  i and j from nested for loop commented above
+{
+    int count;
+    if(i < 0 || j < 0 || arr[i][j] == xo * -1 || arr[i][j] == 0 || j == width ) //base cases
+    {
+        count = 0;
+    }
+    else
+    {
+        count = 1 +  diagonal_check_45(height, width, arr, xo, i-1, j+1);
+    }
+
+    return count;
+}
+
+

@@ -32,6 +32,13 @@ progress: SOLVED the display problem
 
 date: 2022 - 12 - 22
 collaborator name: Mahmoud abdelghany
-progress: implemented time functions to the game 
+progress: implemented time functions to the game
+
+date: 2022 - 12 - 24
+collaborator name: Andrew Safwat
+progress: implemented the scores checking function
+ 	  PROBLEMS: unable to display it (appearence of the game needs to be adjusted)
+
+ 
 
 
