@@ -6,10 +6,10 @@
 #include <limits.h>
 #include<time.h>
 
-int horizontal_check(int height, int width, int arr[height][width], int xo, int, int);
-int vertical_check(int height, int width, int arr[height][width], int xo, int, int);
-int diagonal_check_45(int height, int width, int arr[height][width], int xo, int, int);
-int diagonal_check_135(int height, int width, int arr[height][width], int xo, int, int);
+int horizontal_check(int height, int width, int arr[height][width], int xo, int, int, int);
+int vertical_check(int height, int width, int arr[height][width], int xo, int, int, int);
+int diagonal_check_45(int height, int width, int arr[height][width], int xo, int, int, int);
+int diagonal_check_135(int height, int width, int arr[height][width], int xo, int, int, int);
 
 void check_score(int height, int width, int arr[height][width], int xo);
 
@@ -71,8 +71,6 @@ int main()
             //new algorithm of printing
             play_display_with_computer(height,width);
 
-            end = clock(); // defining end time
-            display_time(start,end);  // display the time
 
              /* this will be changed to read from file XML after initializing it but
             for now let's cover every thing*/
@@ -170,17 +168,11 @@ void gotoxy(int x,int y){
 int main_menu(){
     /*
     main menu window with four choices to choose from the function.
-
     returns 1, 2, 3 or 4 according to user keyboard input "Enter" or "ESC" buttons
-
     choice 1 "only accessed by Enter" is responsible for creating new game
-
     choice 2 "only accessed by Enter" is responsible for loading the previous game
-
     choice 3 "only accessed by Enter" is responsible for showing top scores
-
     choice 4 "accessed by both Enter and ESC" is responsible for closing the program
-
     */
     int choice;
 
@@ -302,8 +294,6 @@ void draw_box_main(){
     /*
     responsible for creating the border of the main menu window
     hint: check extended ASCII (DOS) code for the values: 201, 205, 187, 186, 200, 188 --> in (ASCII_Extended.png) attached with this file
-
-
     */
     gotoxy(39, 9);
     printf("%c", 201);
@@ -472,6 +462,7 @@ void greet_players(int mode){
 // function to play and display board after each turn it take two arguments :height and width
 void play_display(int height, int width)
 {
+    clock_t start=clock();
     int col1, col2, i, j; //col 1, 2: will stand for columns of two players , while i, j are iterators
     long long int k = width * height; //number of moves
     int moves[height][width];  //array to store moves
@@ -515,12 +506,13 @@ void play_display(int height, int width)
              moves[maxcolsize[col1]][col1] = 1; // if player 1 choose a column the row index of it will start from height and will be decreased till zero
 
 
-             Sleep(0.5);
-             system("cls");
 
              printboard(height,width,moves); // print board after paying
 
              check_score(height, width, moves, 1);
+
+             clock_t end = clock(); // defining end time
+            display_time(start,end);  // display the time
 
              maxcolsize[col1]--;
 
@@ -543,11 +535,13 @@ void play_display(int height, int width)
             }
            moves[maxcolsize[col2]][col2] = -1;
 
-           system("cls");
 
            printboard(height, width, moves);
 
            check_score(height, width, moves, -1);
+            clock_t end = clock(); // defining end time
+            display_time(start,end);  // display the time
+
 
            maxcolsize[col2]--;
 
@@ -678,7 +672,8 @@ void play_display_with_computer(int height, int width)
             printf("\n COMPUTER'S TURN ");
 
             sleep(1);
-            col2=rand();
+            srand(time(0));
+            col2=rand()%(width);
             while(maxcolsize[col2]<0||col2>width-1||col2<0)
             {
                 col2=rand();
@@ -708,99 +703,102 @@ void check_score(int height, int width, int arr[height][width], int xo)
         for(int j = width -1; j>= 0; j--)
         {
 
-            count = horizontal_check(height, width, arr, xo, i, j); //height then width (columns) then array - count should be 4 !!!!!
+            count = horizontal_check(height, width, arr, xo, i, j, 0); //height then width (columns) then array - count should be 4 !!!!!
             if(count / 4 >= 1)
             {
                 score += (count -3);
             }
 
-            count = vertical_check(height, width, arr, xo, i, j);
+            count = vertical_check(height, width, arr, xo, i, j, 0);
             if(count / 4 >= 1)
             {
                 score += (count -3);
             }
 
-            count = diagonal_check_45 (height, width, arr, xo, i, j);
+            count = diagonal_check_45 (height, width, arr, xo, i, j, 0);
             if(count / 4 >= 1)
             {
                 score += (count -3);
             }
 
-            count = diagonal_check_135 (height, width, arr, xo, i, j);
+            count = diagonal_check_135 (height, width, arr, xo, i, j, 0);
             if(count / 4 >= 1)
             {
                 score += (count -3);
             }
         }
     }
+    printf("\n%d\n",score);
 
 /////////////////WE NEEEEED TO DISPLAY SCORESSSS
 }
 
 
 
-int horizontal_check(int height, int width, int arr[height][width], int xo, int i, int j) //parameters : 1- rows,  2 -columns , 3 - array ,
+int horizontal_check(int height, int width, int arr[height][width], int xo, int i, int j, int counter) //parameters : 1- rows,  2 -columns , 3 - array ,
 //4-x or O value (1 or -1) ,5, 6:  i and j from nested for loop commented above
 {
     int count;
-    if(i < 0 || j < 0 || arr[i][j] == xo * -1 || arr[i][j] == 0 ) //base cases
+    if(i < 0 || j < 0 || arr[i][j] == xo * -1 || arr[i][j] == 0 || counter == 4) //base cases
     {
         count = 0;
     }
     else
     {
-        count = 1 +  horizontal_check(height, width, arr, xo, i, j-1);
+        counter += 1;
+        count = 1 +  horizontal_check(height, width, arr, xo, i, j-1, counter);
     }
 
     return count;
 }
 
-int vertical_check(int height, int width, int arr[height][width], int xo, int i, int j) //parameters : 1- rows,  2 -columns , 3 - array ,
+int vertical_check(int height, int width, int arr[height][width], int xo, int i, int j, int counter) //parameters : 1- rows,  2 -columns , 3 - array ,
 //4-x or O value (1 or -1) ,5, 6:  i and j from nested for loop commented above
 {
     int count;
-    if(i < 0 || j < 0 || arr[i][j] == xo * -1 || arr[i][j] == 0 ) //base cases
+    if(i < 0 || j < 0 || arr[i][j] == xo * -1 || arr[i][j] == 0 || counter == 4) //base cases
     {
         count = 0;
     }
     else
     {
-        count = 1 +  vertical_check(height, width, arr, xo, i-1, j);
+        counter += 1;
+        count = 1 +  vertical_check(height, width, arr, xo, i-1, j, counter);
     }
 
     return count;
 }
 
-int diagonal_check_135(int height, int width, int arr[height][width], int xo, int i, int j) //parameters : 1- rows,  2 -columns , 3 - array ,
+int diagonal_check_135(int height, int width, int arr[height][width], int xo, int i, int j, int counter) //parameters : 1- rows,  2 -columns , 3 - array ,
 //4-x or O value (1 or -1) ,5, 6:  i and j from nested for loop commented above
 {
     int count;
-    if(i < 0 || j < 0 || arr[i][j] == xo * -1 || arr[i][j] == 0 ) //base cases
+    if(i < 0 || j < 0 || arr[i][j] == xo * -1 || arr[i][j] == 0 || counter == 4) //base cases
     {
         count = 0;
     }
     else
     {
-        count = 1 +  diagonal_check_135(height, width, arr, xo, i-1, j-1);
+        counter += 1;
+        count = 1 +  diagonal_check_135(height, width, arr, xo, i-1, j-1, counter);
     }
 
     return count;
 }
 
-int diagonal_check_45(int height, int width, int arr[height][width], int xo, int i, int j) //parameters : 1- rows,  2 -columns , 3 - array ,
+int diagonal_check_45(int height, int width, int arr[height][width], int xo, int i, int j, int counter) //parameters : 1- rows,  2 -columns , 3 - array ,
 //4-x or O value (1 or -1) ,5, 6:  i and j from nested for loop commented above
 {
     int count;
-    if(i < 0 || j < 0 || arr[i][j] == xo * -1 || arr[i][j] == 0 || j == width ) //base cases
+    if(i < 0 || j < 0 || arr[i][j] == xo * -1 || arr[i][j] == 0 || j == width || counter == 4) //base cases
     {
         count = 0;
     }
     else
     {
-        count = 1 +  diagonal_check_45(height, width, arr, xo, i-1, j+1);
+        counter += 1;
+        count = 1 +  diagonal_check_45(height, width, arr, xo, i-1, j+1, counter);
     }
 
     return count;
 }
-
-
