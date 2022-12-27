@@ -13,13 +13,13 @@ int diagonal_check_135(int height, int width, int arr[height][width], int xo, in
 
 void check_score(int height, int width, int arr[height][width], int xo);
 
-void play_display_with_computer(int row, int column, int arr[row * 2 + 1][column * 2 + 1]);
+void play_display_with_computer(int row, int column, int arr[row * 2 + 1][column * 4 + 1]);
 
 void display_time(clock_t start, clock_t end);
 
 void init_array(int height, int width, int arr[height][width]);               /// RECENTLY ADDED
 void printboard(int height, int width, int arr[height][width]);               /// RECENTLY ADDED
-void play_display(int row, int column, int arr[row * 2 + 1][column * 2 + 1]); /// RECENTLY ADDED
+void play_display(int row, int column, int arr[row * 2 + 1][column * 4 + 1]); /// RECENTLY ADDED
 void greet_players(int mode);
 int choices_mode();
 int prompt_mode();
@@ -64,7 +64,7 @@ int main()
                 scanf("%d %d", &row, &column); // i change this
             }
 
-            width = column * 2 + 1;
+            width = column * 4 + 1;
             height = row * 2 + 1;
 
             int arr[height][width];
@@ -110,7 +110,7 @@ int main()
                 scanf("%d %d", &row, &column); // i change this
             }
 
-            width = column * 2 + 1;
+            width = column * 4 + 1;
             height = row * 2 + 1;
 
             int arr[height][width];
@@ -471,6 +471,11 @@ void greet_players(int mode)
 
 void init_array(int height, int width, int arr[height][width])
 {
+    /*
+    initializing the array responsible for displaying, save & load, undo & redo, score check ...etc.
+    arguments : take the REAL width and height of the array (including borders)
+    */
+
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
@@ -481,7 +486,7 @@ void init_array(int height, int width, int arr[height][width])
             else if (i == height - 1 && j == width - 1)
                 arr[i][j] = 188;
 
-            else if (i % 2 == 0 && j % 2 == 0 && i > 0 && i < height - 1 && j > 0 && j < width - 1)
+            else if (i % 2 == 0 && j % 4 == 0 && i > 0 && i < height - 1 && j > 0 && j < width - 1)
                 arr[i][j] = 206;
 
             else if (i == 0 && j == width - 1)
@@ -496,16 +501,16 @@ void init_array(int height, int width, int arr[height][width])
             else if (i % 2 == 0 && j == width - 1)
                 arr[i][j] = 185;
 
-            else if (i == 0 && j % 2 == 0)
+            else if (i == 0 && j % 4 == 0)
                 arr[i][j] = 203;
 
-            else if (i == height - 1 && j % 2 == 0)
+            else if (i == height - 1 && j % 4 == 0)
                 arr[i][j] = 202;
 
-            else if (i % 2 == 0 && j % 2 == 1)
+            else if (i % 2 == 0 && j % 4 != 0)
                 arr[i][j] = 205;
 
-            else if (i % 2 == 1 && j % 2 == 0)
+            else if (i % 2 == 1 && j % 4 == 0)
                 arr[i][j] = 186;
 
             else
@@ -515,10 +520,10 @@ void init_array(int height, int width, int arr[height][width])
 }
 
 // function to play and display board after each turn it take two arguments :height and width
-void play_display(int row, int column, int arr[row * 2 + 1][column * 2 + 1])
+void play_display(int row, int column, int arr[row * 2 + 1][column * 4 + 1])
 {
     clock_t start = clock();
-    int col1, col2, i, j, height = 2 * row + 1, width = 2 * column + 1; // col 1, 2: will stand for columns of two players , while i, j are iterators
+    int col1, col2, i, j, height = 2 * row + 1, width = 4 * column + 1; // col 1, 2: will stand for columns of two players , while i, j are iterators
     long long int k = row * column;                                     // number of moves
     int maxcolsize[column + 1];                                         // array to check maxsize //all its elements will take value of height and will be decreased if column chosen
 
@@ -545,7 +550,9 @@ void play_display(int row, int column, int arr[row * 2 + 1][column * 2 + 1])
                 printf("please choose another one: ");
                 scanf("%d", &col1);
             }
-            arr[maxcolsize[col1] * 2 - 1][col1 * 2 - 1] = 1; // if player 1 choose a column the row index of it will start from height and will be decreased till zero
+            arr[maxcolsize[col1] * 2 - 1][col1 * 4 - 3] = 1; // if player 1 choose a column the row index of it will start from height and will be decreased till zero
+            arr[maxcolsize[col1] * 2 - 1][col1 * 4 - 2] = 1;
+            arr[maxcolsize[col1] * 2 - 1][col1 * 4 - 1] = 1;
 
             printboard(height, width, arr); // print board after playing
 
@@ -571,7 +578,9 @@ void play_display(int row, int column, int arr[row * 2 + 1][column * 2 + 1])
                 scanf("%d", &col2);
             }
 
-            arr[maxcolsize[col2] * 2 - 1][col2 * 2 - 1] = -1;
+            arr[maxcolsize[col2] * 2 - 1][col2 * 4 - 3] = -1;
+            arr[maxcolsize[col2] * 2 - 1][col2 * 4 - 2] = -1;
+            arr[maxcolsize[col2] * 2 - 1][col2 * 4 - 1] = -1;
 
             printboard(height, width, arr);
 
@@ -601,12 +610,12 @@ void printboard(int height, int width, int arr[height][width]) // this fn will b
             SetConsoleTextAttribute(console, 15);
             if (arr[i][j] == 1)
             {
-                SetConsoleTextAttribute(console, 144);
+                SetConsoleTextAttribute(console, 144); //blue
                 printf(" ");
             }
             else if (arr[i][j] == -1)
             {
-                SetConsoleTextAttribute(console, 64);
+                SetConsoleTextAttribute(console, 64); //red
                 printf(" ");
             }
             else
@@ -657,9 +666,9 @@ void display_time(clock_t start, clock_t end) // fn to display time in game ///i
     printf("seconds : %d", t.seconds);
 }
 
-void play_display_with_computer(int row, int column, int arr[row * 2 + 1][column * 2 + 1])
+void play_display_with_computer(int row, int column, int arr[row * 2 + 1][column * 4 + 1])
 {
-    int col1, col2, i, j, height = 2 * row + 1, width = 2 * column + 1; // col 1, 2: will stand for columns of two players , while i, j are iterators
+    int col1, col2, i, j, height = 2 * row + 1, width = 4 * column + 1; // col 1, 2: will stand for columns of two players , while i, j are iterators
     long long int k = row * column;                                     // number of moves
     int maxcolsize[column + 1];                                         // array to check maxsize //all its elements will take value of height and will be decreased if column chosen
 
@@ -685,7 +694,9 @@ void play_display_with_computer(int row, int column, int arr[row * 2 + 1][column
                 scanf("%d", &col1);
             }
 
-            arr[maxcolsize[col1] * 2 - 1][col1 * 2 - 1] = 1;
+            arr[maxcolsize[col1] * 2 - 1][col1 * 4 - 3] = 1; // if player 1 choose a column the row index of it will start from height and will be decreased till zero
+            arr[maxcolsize[col1] * 2 - 1][col1 * 4 - 2] = 1;
+            arr[maxcolsize[col1] * 2 - 1][col1 * 4 - 1] = 1;
 
             printboard(height, width, arr); // print board after playing
 
@@ -706,7 +717,9 @@ void play_display_with_computer(int row, int column, int arr[row * 2 + 1][column
             {
                 col2 = rand() % (column + 1);
             }
-            arr[maxcolsize[col2] * 2 - 1][col2 * 2 - 1] = -1;
+            arr[maxcolsize[col2] * 2 - 1][col2 * 4 - 1] = -1; // red or blue is represented by three spaces
+            arr[maxcolsize[col2] * 2 - 1][col2 * 4 - 2] = -1;
+            arr[maxcolsize[col2] * 2 - 1][col2 * 4 - 3] = -1;
 
             printboard(height, width, arr);
 
@@ -724,13 +737,13 @@ void check_score(int height, int width, int arr[height][width], int xo)
 {
     int score = 0, count;
 
-    for (int i = height - 1; i >= 0; i--)
+    for (int i = height - 2; i >= 0; i -= 2)
     {
-        for (int j = width - 1; j >= 0; j--)
+        for (int j = width - 2; j >= 0; j -= 4)
         {
             if (arr[i][j] == xo) /// NEW!
             {
-                count = horizontal_check(height, width, arr, xo, i, j, 0); // height then width (columns) then array - count should be 4 !!!!!
+                count = horizontal_check(height, width, arr, xo, i, j, 0); // height then width (columns) then diagonals - count should be 4 !!!!!
                 if (count / 4 >= 1)
                 {
                     score += (count - 3);
@@ -778,7 +791,7 @@ int horizontal_check(int height, int width, int arr[height][width], int xo, int 
     else
     {
         counter += 1;
-        count = 1 + horizontal_check(height, width, arr, xo, i, j - 2, counter);
+        count = 1 + horizontal_check(height, width, arr, xo, i, j - 4, counter);
     }
 
     return count;
@@ -812,7 +825,7 @@ int diagonal_check_135(int height, int width, int arr[height][width], int xo, in
     else
     {
         counter += 1;
-        count = 1 + diagonal_check_135(height, width, arr, xo, i - 2, j - 2, counter);
+        count = 1 + diagonal_check_135(height, width, arr, xo, i - 2, j - 4, counter);
     }
 
     return count;
@@ -822,14 +835,14 @@ int diagonal_check_45(int height, int width, int arr[height][width], int xo, int
 // 4-x or O value (1 or -1) ,5, 6:  i and j from nested for loop commented above
 {
     int count;
-    if (i < 0 || j < 0 || arr[i][j] == xo * -1 || arr[i][j] == 32 || j == width || counter == 4) // base cases
+    if (i < 0 || j < 0 || arr[i][j] == xo * -1 || arr[i][j] == 32 || j >= width || counter == 4) // base cases
     {
         count = 0;
     }
     else
     {
         counter += 1;
-        count = 1 + diagonal_check_45(height, width, arr, xo, i - 2, j + 2, counter);
+        count = 1 + diagonal_check_45(height, width, arr, xo, i - 2, j + 4, counter);
     }
 
     return count;
