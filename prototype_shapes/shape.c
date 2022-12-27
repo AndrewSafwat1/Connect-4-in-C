@@ -6,6 +6,14 @@ void init_array(int height, int width, int arr[height][width]);
 void play_display(int row, int column, int arr[row*2+1][column*2+1]);
 void printboard(int height, int width, int arr[height][width]);
 
+int horizontal_check(int height, int width, int arr[height][width], int xo, int, int, int);
+int vertical_check(int height, int width, int arr[height][width], int xo, int, int, int);
+int diagonal_check_45(int height, int width, int arr[height][width], int xo, int, int, int);
+int diagonal_check_135(int height, int width, int arr[height][width], int xo, int, int, int);
+
+void check_score(int height, int width, int arr[height][width], int xo);
+
+/// for every 50 <-> -1 and for every 49 <-> -1
 int main()
 {
 
@@ -46,7 +54,7 @@ void init_array(int height, int width, int arr[height][width])
             else if(i % 2 == 0 && j % 2 == 0 && i > 0 && i < height -1 && j > 0 && j < width -1)
                 arr[i][j] = 206;
 
-            else if(i == 0 && j == width -1)
+            else if(i == 0 && j == width - 1)
                 arr[i][j] = 187;
 
             else if(i == height -1 && j == 0)
@@ -77,11 +85,6 @@ void init_array(int height, int width, int arr[height][width])
 
 
 }
-
-//will SHIFT ONE DUE TO BASE 0
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 void play_display(int row, int column, int arr[row*2+1][column*2+1])
 {
@@ -118,11 +121,11 @@ void play_display(int row, int column, int arr[row*2+1][column*2+1])
                  printf("please choose another one: ");
                  scanf("%d", &col1);
             }
-            arr[maxcolsize[col1] * 2 -1][col1 * 2 - 1] = 49; // if player 1 choose a column the row index of it will start from height and will be decreased till zero
+            arr[maxcolsize[col1] * 2 -1][col1 * 2 - 1] = 1; // if player 1 choose a column the row index of it will start from height and will be decreased till zero
 
             printboard(height, width, arr); // print board after playing
 
-//          check_score(height, width, moves, 1);
+            check_score(height, width, arr, 1);
 
 //          clock_t end = clock(); // defining end time
 //          display_time(start,end);  // display the time
@@ -147,12 +150,12 @@ void play_display(int row, int column, int arr[row*2+1][column*2+1])
                  scanf("%d", &col2);
             }
 
-            arr[maxcolsize[col2] * 2 -1][col2 * 2 - 1] = 50;
+            arr[maxcolsize[col2] * 2 -1][col2 * 2 - 1] = -1;
 
 
             printboard(height, width, arr);
 
-//          check_score(height, width, moves, -1);
+            check_score(height, width, arr, -1);
 //          clock_t end = clock(); // defining end time
 //          display_time(start,end);  // display the time
 
@@ -179,12 +182,12 @@ void printboard(int height, int width, int arr[height][width]) //this fn will be
         for(int j = 0 ; j < width ; j++)
         {
             SetConsoleTextAttribute(console, 15);
-            if(arr[i][j] == 49)
+            if(arr[i][j] == 1)
             {
                 SetConsoleTextAttribute(console, 144);
                 printf(" ");
             }
-            else if(arr[i][j] == 50)
+            else if(arr[i][j] == -1)
             {
                 SetConsoleTextAttribute(console, 64);
                 printf(" ");
@@ -194,5 +197,126 @@ void printboard(int height, int width, int arr[height][width]) //this fn will be
         }
         printf("\n");
     }
+}
+
+/////////////////////////////////////////////////////////////////////////score check //////////////////////
+void check_score(int height, int width, int arr[height][width], int xo)
+{
+    int score = 0, count;
+
+    for(int i = height -1; i >= 0;i--)
+    {
+        for(int j = width -1; j>= 0; j--)
+        {
+            if(arr[i][j] == xo) ///NEW!
+            {
+                count = horizontal_check(height, width, arr, xo, i, j, 0); //height then width (columns) then array - count should be 4 !!!!!
+                if(count / 4 >= 1)
+                {
+                    score += (count -3);
+                }
+
+                count = vertical_check(height, width, arr, xo, i, j, 0);
+                if(count / 4 >= 1)
+                {
+                    score += (count -3);
+                }
+
+                count = diagonal_check_45 (height, width, arr, xo, i, j, 0);
+                if(count / 4 >= 1)
+                {
+                    score += (count -3);
+                }
+
+                count = diagonal_check_135 (height, width, arr, xo, i, j, 0);
+                if(count / 4 >= 1)
+                {
+                    score += (count -3);
+                }
+            }
+
+
+        }
+    }
+    if(xo == 1)
+    {
+        printf("\nPlayer 1 score: %d\n", score);
+    }
+    else
+    {
+        printf("\nPlayer 2 score: %d\n", score);
+    }
+
+/////////////////WE NEEEEED TO DISPLAY SCORESSSS
+}
+
+
+
+int horizontal_check(int height, int width, int arr[height][width], int xo, int i, int j, int counter) //parameters : 1- rows,  2 -columns , 3 - array ,
+//4-x or O value (1 or -1) ,5, 6:  i and j from nested for loop commented above
+{
+    int count; ///condition changed arr[i][j] == 3222222
+    if(i < 0 || j < 0 || arr[i][j] == xo * -1 || arr[i][j] == 32 || counter == 4) //base cases
+    {
+        count = 0;
+    }
+    else
+    {
+        counter += 1;
+        count = 1 +  horizontal_check(height, width, arr, xo, i, j-2, counter); ///j - 2
+    }
+
+    return count;
+}
+
+int vertical_check(int height, int width, int arr[height][width], int xo, int i, int j, int counter) //parameters : 1- rows,  2 -columns , 3 - array ,
+//4-x or O value (1 or -1) ,5, 6:  i and j from nested for loop commented above
+{
+    int count;///condition changed arr[i][j] == 3222222
+    if(i < 0 || j < 0 || arr[i][j] == xo * -1 || arr[i][j] == 32 || counter == 4) //base cases
+    {
+        count = 0;
+    }
+    else
+    {
+        counter += 1;
+        count = 1 +  vertical_check(height, width, arr, xo, i-2, j, counter);///i - 2
+    }
+
+    return count;
+}
+
+int diagonal_check_135(int height, int width, int arr[height][width], int xo, int i, int j, int counter) //parameters : 1- rows,  2 -columns , 3 - array ,
+//4-x or O value (1 or -1) ,5, 6:  i and j from nested for loop commented above
+{
+    int count;///condition changed arr[i][j] == 3222222
+    if(i < 0 || j < 0 || arr[i][j] == xo * -1 || arr[i][j] == 32 || counter == 4) //base cases
+    {
+        count = 0;
+    }
+    else
+    {
+        counter += 1;
+        count = 1 +  diagonal_check_135(height, width, arr, xo, i-2, j-2, counter); ///i-2, j-2
+    }
+
+    return count;
+}
+
+int diagonal_check_45(int height, int width, int arr[height][width], int xo, int i, int j, int counter) //parameters : 1- rows,  2 -columns , 3 - array ,
+//4-x or O value (1 or -1) ,5, 6:  i and j from nested for loop commented above
+{
+    int count;///condition changed arr[i][j] == 3222222
+    if(i < 0 || j < 0 || arr[i][j] == xo * -1 || arr[i][j] == 32 || j == width || counter == 4) //base cases
+    {
+        count = 0;
+    }
+    else
+    {
+        counter += 1;
+        count = 1 +  diagonal_check_45(height, width, arr, xo, i-2, j+2, counter); ///i-2 , j+2
+    }
+
+    return count;
 }
 
