@@ -14,13 +14,13 @@ int diagonal_check_135(int height, int width, int arr[height][width], int xo, in
 void check_score(int height, int width, int arr[height][width], int xo);
 
 
-void play_display_with_computer(int height, int width);
+void play_display_with_computer(int row, int column, int arr[row*2+1][column*2+1]);
 
 void display_time(clock_t start,clock_t end);
 
-
-void printboard(int height, int width, int arr[height][width]);
-void play_display(int height, int width);
+void init_array(int height, int width, int arr[height][width]); ///RECENTLY ADDED
+void printboard(int height, int width, int arr[height][width]);  ///RECENTLY ADDED
+void play_display(int row, int column, int arr[row*2+1][column*2+1]); ///RECENTLY ADDED
 void greet_players(int mode);
 int choices_mode();
 int prompt_mode();
@@ -39,7 +39,7 @@ int main()
 
     start = clock(); // defining start time
 
-    int width, height, choice, mode;
+    int width, height, row, column, choice, mode;
 
     choice = main_menu();
 
@@ -53,24 +53,35 @@ int main()
             gotoxy(0, 0);
             greet_players(1);
             ShowConsoleCursor(true); // to get the white dash in the console back
-             printf("please enter the height and the width of your connect 4 board (separated by a space):"); //Prompting width and height
-            scanf("%d %d", &height, &width);// i change this
+            printf("Enter the height and the width of your connect 4 board (separated by a space):"); //Prompting width and height
+            scanf("%d %d", &row, &column);// i change this
 
              /* this will be changed to read from file XML after initializing it but
             for now let's cover every thing*/
             /*validation on size not exceeding integer borders or negative*/
 
-            while(width <= 0 || width > INT_MAX || height <= 0 || height > INT_MAX)
+            while(column <= 0 || column > INT_MAX || row <= 0 || row > INT_MAX)
             {
                 printf("select an appropriate size: ");
-                scanf("%d %d", &height, &width);// i change this
+                scanf("%d %d", &row, &column);// i change this
             }
+
+            width = column * 2 + 1;
+            height = row * 2 + 1;
+
+            int arr[height][width];
+
+            init_array(height, width, arr);
+
+            sleep(1);
+            system("cls");
 
             //algorithm of printing
             //display_board(width, height);
             //new algorithm of printing
-            play_display_with_computer(height,width);
 
+            srand(time(NULL));
+            play_display_with_computer(row, column, arr);
 
              /* this will be changed to read from file XML after initializing it but
             for now let's cover every thing*/
@@ -91,17 +102,24 @@ int main()
             ShowConsoleCursor(true); // to get the white dash in the console back
 
             printf("please enter the height and the width of your connect 4 board (separated by a space):"); //Prompting width and height
-            scanf("%d %d", &height, &width);// i change this
+            scanf("%d %d", &row, &column);// i change this
 
              /* this will be changed to read from file XML after initializing it but
             for now let's cover every thing*/
             /*validation on size not exceeding integer borders or negative*/
 
-            while(width <= 0 || width > INT_MAX || height <= 0 || height > INT_MAX)
+            while(row <= 0 || row > INT_MAX || column <= 0 || column > INT_MAX)
             {
                 printf("select an appropriate size: ");
-                scanf("%d %d", &height, &width);// i change this
+                scanf("%d %d", &row, &column);// i change this
             }
+
+            width = column * 2 + 1;
+            height = row * 2 + 1;
+
+            int arr[height][width];
+
+            init_array(height, width, arr);
 
             sleep(1);
             system("cls");
@@ -111,7 +129,8 @@ int main()
             //algorithm of printing
             //display_board(width, height);
             //new algorithm of printing
-            play_display(height,width);
+            play_display(row, column, arr);
+
 
             end = clock(); // defining end time
             display_time(start,end);  // display the time
@@ -146,10 +165,6 @@ int main()
     {
         return 0;
     }
-
-
-
-
     return 0;
 }
 
@@ -341,9 +356,6 @@ void delete_box(){
 }
 
 
-
-
-
 int prompt_mode(){
     /*
     similar to main menu but it differs only on return value which has range of 1 - 3
@@ -435,8 +447,6 @@ int choices_mode(){
 
     SetConsoleTextAttribute(console, 15); // get the console back to its default mode
 
-
-
     return position;
 }
 
@@ -458,96 +468,134 @@ void greet_players(int mode){
     printf("let's start our game\n");
 }
 
+void init_array(int height, int width, int arr[height][width])
+{
+        for(int i = 0; i < height ;i++)
+    {
+        for(int j =0; j < width; j++)
+        {
+            if(i == 0 && j == 0)
+                arr[i][j] = 201;
+
+            else if(i == height -1 && j == width -1)
+                arr[i][j] = 188;
+
+            else if(i % 2 == 0 && j % 2 == 0 && i > 0 && i < height -1 && j > 0 && j < width -1)
+                arr[i][j] = 206;
+
+            else if(i == 0 && j == width -1)
+                arr[i][j] = 187;
+
+            else if(i == height -1 && j == 0)
+                arr[i][j] = 200;
+
+            else if(i % 2 == 0 && j == 0)
+                arr[i][j] = 204;
+
+            else if(i % 2 == 0 && j == width -1)
+                arr[i][j] = 185;
+
+            else if(i == 0 && j % 2 == 0)
+                arr[i][j] = 203;
+
+            else if(i == height -1 && j % 2 == 0)
+                arr[i][j] = 202;
+
+            else if(i % 2 == 0 && j % 2 == 1)
+                arr[i][j] = 205;
+
+            else if(i % 2 == 1 && j % 2 == 0)
+                arr[i][j] = 186;
+
+            else
+                arr[i][j] = 32; //space in ascii code
+        }
+    }
+}
+
+
+
 
 // function to play and display board after each turn it take two arguments :height and width
-void play_display(int height, int width)
+void play_display(int row, int column, int arr[row*2+1][column*2+1])
 {
     clock_t start=clock();
-    int col1, col2, i, j; //col 1, 2: will stand for columns of two players , while i, j are iterators
-    long long int k = width * height; //number of moves
-    int moves[height][width];  //array to store moves
-    int maxcolsize[width];   // array to check maxsize //all its elements will take value of height and will be decreased if column chosen
+    int col1, col2, i, j, height = 2 * row + 1, width = 2 * column + 1; //col 1, 2: will stand for columns of two players , while i, j are iterators
+    long long int k = row * column; //number of moves
+    int maxcolsize[column + 1];   // array to check maxsize //all its elements will take value of height and will be decreased if column chosen
 
-   for(i = 0; i < height; i++)
-   {
-       for(j = 0; j < width; j++)
-       {
-           moves[i][j]=0; //set all moves to default zero
-       }
+    for(i = 1; i < column + 1; i++)
+    {
+        maxcolsize[i] = row ;  // set all values of it to value of height as mentioned
+    }
 
-   }
+    int turn=1;
 
-   for(i = 0; i < width; i++)
-   {
-       maxcolsize[i] = height -1;  // set all values of it to value of height as mentioned
-   }
-
-   int turn=1;
-   printboard(height, width, moves); //print standrd board
+    printboard(height, width, arr); //print standard board
 
 
 
-   while(k > 0)
-   {
+    while(k > 0)
+    {
 
-       if(turn % 2 == 1) // odd turns player 1
-       {
+        if(turn % 2 == 1) // odd turns player 1
+        {
 
 
-           printf("\nplayer1,please choose column from 0 to %d:", width - 1);
-           scanf("%d",&col1);
-           while(maxcolsize[col1] < 0 || col1 > width-1 || col1 < 0)// validation on column index
+            printf("\nplayer1,please choose column from 1 to %d:", column);
+            scanf("%d",&col1);
+            while(maxcolsize[col1] < 1 || col1 > column|| col1 < 1)// validation on column index
             {
                  printf("this column is no longer valid\n");
                  printf("please choose another one: ");
                  scanf("%d", &col1);
             }
+            arr[maxcolsize[col1] * 2 -1][col1 * 2 - 1] = 49; // if player 1 choose a column the row index of it will start from height and will be decreased till zero
 
-             moves[maxcolsize[col1]][col1] = 1; // if player 1 choose a column the row index of it will start from height and will be decreased till zero
+            printboard(height, width, arr); // print board after playing
 
+//          check_score(height, width, moves, 1); ///NEEDS TO BE UNCOMMENTED    !!!
 
-
-             printboard(height,width,moves); // print board after paying
-
-             check_score(height, width, moves, 1);
-
-             clock_t end = clock(); // defining end time
+            clock_t end = clock(); // defining end time
             display_time(start,end);  // display the time
 
-             maxcolsize[col1]--;
+            maxcolsize[col1]--;
 
 
-             turn++; // increase turns
+            turn++; // increase turns
 
 
        }
        else
        {
 
-            printf("\nplayer2, choose column from 0 to %d:",width-1);
-            scanf("%d",&col2);
+            printf("\nplayer2, choose column from 1 to %d:", column);
+            scanf("%d", &col2);
 
-            while(maxcolsize[col2]<0||col2>width-1||col2<0)
+            while(maxcolsize[col2] < 1 || col2 > column || col2 < 1)
             {
                  printf("this column is no longer valid\n");
                  printf("please choose another one: ");
                  scanf("%d", &col2);
             }
-           moves[maxcolsize[col2]][col2] = -1;
+
+            arr[maxcolsize[col2] * 2 -1][col2 * 2 - 1] = 50;
 
 
-           printboard(height, width, moves);
+            printboard(height, width, arr);
 
-           check_score(height, width, moves, -1);
-            clock_t end = clock(); // defining end time
-            display_time(start,end);  // display the time
+//          check_score(height, width, moves, -1);  ///NEEDS TO BE UNCOMMENTED    !!!
+          clock_t end = clock(); // defining end time
+          display_time(start,end);  // display the time
 
 
-           maxcolsize[col2]--;
+            maxcolsize[col2]--;
 
-           turn++;
+            turn++;
 
        }
+
+
        k--; //decrease k till zero which will indicate that board is complete
    }
 }
@@ -556,30 +604,28 @@ void play_display(int height, int width)
 void printboard(int height, int width, int arr[height][width]) //this fn will be called in the fn of playing game to display board after each turn
                                                     //it takes height and width and array of moves and display according to value
 {
-
-    int i,j;
-    for(i = 0; i < height; i++)
+    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+    for(int i = 0; i < height; i++)
     {
 
-        printf("\n************************\n");
-        for(j = 0; j < width; j++)
+        for(int j = 0 ; j < width ; j++)
         {
-            if(arr[i][j] == 0)
+            SetConsoleTextAttribute(console, 15);
+            if(arr[i][j] == 49)
             {
-                printf("| |");
+                SetConsoleTextAttribute(console, 144);
+                printf(" ");
             }
-            else if(arr[i][j] == 1)
+            else if(arr[i][j] == 50)
             {
-                printf("|X|");
+                SetConsoleTextAttribute(console, 64);
+                printf(" ");
             }
-
-           else if(arr[i][j] == -1)
-           {
-                printf("|O|");
-           }
+            else
+                printf("%c", arr[i][j]);
         }
+        printf("\n");
     }
-
 }
 
 void display_time(clock_t start,clock_t end) // fn to display time in game ///its calling position in code may be changed
@@ -623,71 +669,61 @@ void display_time(clock_t start,clock_t end) // fn to display time in game ///it
     printf("seconds : %d", t.seconds);
 }
 
-void play_display_with_computer(int height, int width)
+void play_display_with_computer(int row, int column, int arr[row*2+1][column*2+1])
 {
-    int col1,col2, i, j; //col 1, 2: will stand for columns of two players , while i, j are iterators
-    long long int k=width*height; //number of moves
-    int moves[height][width];  //array to store moves
-    int maxcolsize[width];   // array to check maxsize //all its elements will take value of height and will be decreased if column chosen
+    int col1, col2, i, j, height = 2 * row + 1, width = 2 * column + 1; //col 1, 2: will stand for columns of two players , while i, j are iterators
+    long long int k = row * column; //number of moves
+    int maxcolsize[column + 1];   // array to check maxsize //all its elements will take value of height and will be decreased if column chosen
 
-   for(i=0;i<height;i++)
+   for(i = 1; i < column + 1; i++)
    {
-       for(j=0;j<width;j++)
-       {
-           moves[i][j]=0; //set all moves to default zero
-       }
-
-   }
-
-   for(i=0;i<width;i++)
-   {
-       maxcolsize[i]=height -1;  // set all values of it to value of height as mentioned
+       maxcolsize[i] = row ;  // set all values of it to value of height as mentioned
    }
 
    int turn=1;
-     printboard(height,width,moves); //print standard board
+   printboard(height, width, arr); //print standard board
 
-   while(k>0)
+   while(k > 0)
    {
 
-       if(turn%2==1) // odd turns player 1
+       if(turn % 2 == 1) // odd turns player 1
        {
-            printf("\n YOUR TURN,please choose column from 0 to %d:",width-1);
-       scanf("%d",&col1);
-           while(maxcolsize[col1]<0||col1>width-1||col1<0)// validation on column index
+            printf("\n YOUR TURN,please choose column from 1 to %d:", column);
+            scanf("%d",&col1);
+            while(maxcolsize[col1] < 1 || col1 > column || col1 < 1)// validation on column index
             {
                  printf("this column is no longer valid\n");
                  printf("please choose another one: ");
                  scanf("%d",&col1);
             }
 
-             moves[maxcolsize[col1]][col1]=1; // if player 1 choose a column the row index of it will start from height and will be decreased till zero
-             printboard(height,width,moves); // print board after paying
-             maxcolsize[col1]--;
-             turn++; // increase turns
+            arr[maxcolsize[col1] * 2 -1][col1 * 2 - 1] = 49;
+
+            /// NEEEED TO CHECK SCORE
+            printboard(height, width, arr); // print board after paying
+            maxcolsize[col1]--;
+            turn++; // increase turns
        }
        else
        {
             ShowConsoleCursor(false);
-            printf("\n COMPUTER'S TURN ");
+            printf("\n COMPUTER'S TURN\n");
 
             sleep(1);
-            srand(time(0));
-            col2=rand()%(width);
-            while(maxcolsize[col2]<0||col2>width-1||col2<0)
+
+            col2 = rand() % (column + 1);
+            while(maxcolsize[col2] < 1 || col2 > column || col2 < 1)
             {
-                col2=rand();
+                col2 = rand() % (column + 1);
             }
-           moves[maxcolsize[col2]][col2] = -1;
+            arr[maxcolsize[col2] * 2 - 1][col2 * 2 - 1] = 50;
 
-           printboard(height, width, moves);
+            printboard(height, width, arr);
+            ///NEED TO CHECK SCORE
+            maxcolsize[col2]--;
+            turn++;
+            ShowConsoleCursor(true);
 
-           maxcolsize[col2]--;
-           turn++;
-           ShowConsoleCursor(true);
-
-           Sleep(1);
-           system("cls");
        }
        k--; //decrease k till zero which will indicate that board is complete
    }
