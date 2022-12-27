@@ -46,6 +46,8 @@ progress: implemented the scores checking functions
  date: 2022- 12 - 27
  collaborator name: Andrew Safwat
  progress: adjusted the display function for more beautiful appearance
- 	   PROBLEMS: computer AI ignores some columns.
+ 	   PROBLEMS: sometimes computer AI ignores some columns.
+	   adjusted the score checking functions in order to fit with the new display function
+
 
 
