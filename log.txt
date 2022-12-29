@@ -48,6 +48,7 @@ progress: implemented the scores checking functions
  progress: adjusted the display function for more beautiful appearance
  	   PROBLEMS: sometimes computer AI ignores some columns.
 	   adjusted the score checking functions in order to fit with the new display function
+	   game needs more testing
 
 
 
