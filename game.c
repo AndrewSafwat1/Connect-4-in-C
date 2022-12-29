@@ -6,6 +6,33 @@
 #include <limits.h>
 #include <time.h>
 
+int first_value1 = -1;///
+int first_value2 = -1;
+void push1_value(int, int stack_undo_value[]);///
+void push2_value(int, int stack_redo_value[]);
+int isEmpty1_value();///
+int isEmpty2_value();
+int pop1_value(int stack_undo_value[]);///
+int pop2_value(int stack_redo_value[]);
+
+// stack undo bottom element //UNDO AS 1 , REDO AS 2
+int first1 = -1;
+int first2 = -1;
+
+int row, column;
+
+void push1(int *, int *stack_undo[]); // adds the address of new element of ##our array to the ##undo array
+void push2(int *, int *stack_redo[]); // adds the address of the popped element of the ##undo array to the ##redo array
+
+int isEmpty1(); // checks if ##undo stack is empty or not
+int isEmpty2(); // checks if ##redo stack is empty or not
+
+int *pop1(int *stack_undo[]); // pops the top element of the ##undo stack (in order to push it to ##redo stack)
+int *pop2(int *stack_redo[]); // pops the top element of the ##redo stack (in order to push it to ##undo stack)
+
+// THERE IS NO isFull function in both stacks , as the game is limited by elements = rows * columns
+
+
 int horizontal_check(int height, int width, int arr[height][width], int xo, int, int, int);
 int vertical_check(int height, int width, int arr[height][width], int xo, int, int, int);
 int diagonal_check_45(int height, int width, int arr[height][width], int xo, int, int, int);
@@ -16,10 +43,10 @@ void check_score(int height, int width, int arr[height][width], int xo);
 void play_display_with_computer(int row, int column, int arr[row * 2 + 1][column * 4 + 1]);
 
 void display_time(clock_t start, clock_t end);
-
+void save1(int k,int turn ,int column,int height , int width , int arr[height][width],int maxcolsize[column+1]);
 void init_array(int height, int width, int arr[height][width]);               /// RECENTLY ADDED
 void printboard(int height, int width, int arr[height][width]);               /// RECENTLY ADDED
-void play_display(int row, int column, int arr[row * 2 + 1][column * 4 + 1]); /// RECENTLY ADDED
+void play_display(int row, int column, int arr[row*2+1][column*4+1], int* stack_undo[], int* stack_redo[], int stack_undo_value[], int stack_redo_value[]); ///edited
 void greet_players(int mode);
 int choices_mode();
 int prompt_mode();
@@ -104,11 +131,18 @@ int main()
            for now let's cover every thing*/
             /*validation on size not exceeding integer borders or negative*/
 
+
             while (row <= 0 || row > INT_MAX || column <= 0 || column > INT_MAX)
             {
                 printf("select an appropriate size: ");
                 scanf("%d %d", &row, &column); // i change this
             }
+
+            int *stack_undo[row * column * 3];
+            int *stack_redo[row * column * 3];
+
+            int stack_undo_value[row * column * 3]; ///new
+            int stack_redo_value[row * column * 3];
 
             width = column * 4 + 1;
             height = row * 2 + 1;
@@ -123,7 +157,7 @@ int main()
             // algorithm of printing
             // display_board(width, height);
             // new algorithm of printing
-            play_display(row, column, arr);
+            play_display(row, column, arr, stack_undo, stack_redo, stack_undo_value, stack_redo_value);
 
             end = clock();            // defining end time
             display_time(start, end); // display the time
@@ -143,6 +177,7 @@ int main()
     }
     else if (choice == 2) // Load game
     {
+
     }
     else if (choice == 3) // Top scores
     {
@@ -520,8 +555,9 @@ void init_array(int height, int width, int arr[height][width])
 }
 
 // function to play and display board after each turn it take two arguments :height and width
-void play_display(int row, int column, int arr[row * 2 + 1][column * 4 + 1])
+void play_display(int row, int column, int arr[row * 2 + 1][column * 4 + 1],int* stack_undo[], int* stack_redo[], int stack_undo_value[], int stack_redo_value[])
 {
+    char ans;
     clock_t start = clock();
     int col1, col2, i, j, height = 2 * row + 1, width = 4 * column + 1; // col 1, 2: will stand for columns of two players , while i, j are iterators
     long long int k = row * column;                                     // number of moves
@@ -539,62 +575,342 @@ void play_display(int row, int column, int arr[row * 2 + 1][column * 4 + 1])
     while (k > 0)
     {
 
-        if (turn % 2 == 1) // odd turns player 1
+        if (turn % 2 == 1 || turn % 2 == -1) // odd turns player 1
         {
+            char str1[1] = {0};
+            int ch1, n1 = 0;
 
-            printf("\nplayer1,please choose column from 1 to %d:", column);
-            scanf("%d", &col1);
-            while (maxcolsize[col1] < 1 || col1 > column || col1 < 1) // validation on column index
+            printf("\nplayer1,please choose column from 1 to %d (u for undo, r for redo, s for save):\n", column);
+
+            fflush(stdin);
+
+
+            while ((ch1 = getchar()) != 10 && n1 < 1)
             {
-                printf("this column is no longer valid\n");
-                printf("please choose another one: ");
-                scanf("%d", &col1);
-            }
-            arr[maxcolsize[col1] * 2 - 1][col1 * 4 - 3] = 1; // if player 1 choose a column the row index of it will start from height and will be decreased till zero
-            arr[maxcolsize[col1] * 2 - 1][col1 * 4 - 2] = 1;
-            arr[maxcolsize[col1] * 2 - 1][col1 * 4 - 1] = 1;
+                if (ch1 != 32 && ch1 != 44)
+                {
+                    if (isdigit(ch1))
+                    {
+                        str1[n1] = ch1;
+                        n1++;
 
-            printboard(height, width, arr); // print board after playing
+                    }
+                    else if (isalpha(ch1))
+                    {
+                        str1[n1] = ch1;
+                        n1++;
+                    }
+                }
+            }
+            col1 = str1[0];
+
+            if(isalpha(col1) && (col1 == 83 || col1 == 115)) ///to save the game
+            {
+                save1( k, turn , column, height , width ,arr[height][width], maxcolsize[column+1]);
+                turn --;
+            }
+            else if(isdigit(col1) && (col1 - 48 > column || col1 - 48 < 1 || maxcolsize[col1 - 48] < 1)) ///validate user input
+            {
+                printf("This column is no longer valid\n");
+                turn--;
+            }
+            else if(isalpha(col1) && first2 == -1 && (col1 == 82 || col1 == 114)) ///if user exceeds number of possible redos
+            {
+                printf("You can not redo once more\n");
+                turn--;
+            }
+            else if(isalpha(col1) && first1 == -1 && (col1 == 85 || col1 == 117)) ///if user exceeds number of possible undos
+            {
+                printf("You can not undo once more\n");
+                turn--;
+            }
+            else if(isdigit(col1) && (col1 - 48 >= 1) && (col1 - 48 <= column)) ///playing normally
+            {
+                if(first2 != -1)
+                {
+                    first2 = -1;
+                    first_value2 = -1;
+                }
+                arr[maxcolsize[col1 - 48] * 2 -1][(col1 - 48)* 4 - 1] = 1; // if player 1 choose a column the row index of it will start from height and will be decreased till zero
+                push1(&arr[maxcolsize[col1 - 48] * 2 -1][(col1 - 48) * 4 - 1], stack_undo);
+                push1_value(arr[maxcolsize[col1 - 48] * 2 -1][(col1 - 48) * 4 - 1], stack_undo_value);
+
+                arr[maxcolsize[col1 - 48] * 2 -1][(col1 - 48)* 4 - 2] = 1;
+                push1(&arr[maxcolsize[col1 - 48] * 2 -1][(col1 - 48) * 4 - 2], stack_undo);
+                push1_value(arr[maxcolsize[col1 - 48] * 2 -1][(col1 - 48) * 4 - 2], stack_undo_value);
+
+                arr[maxcolsize[col1 - 48] * 2 -1][(col1 - 48)* 4 - 3] = 1;
+                push1(&arr[maxcolsize[col1 - 48] * 2 -1][(col1 - 48) * 4 - 3], stack_undo);
+                push1_value(arr[maxcolsize[col1 - 48] * 2 -1][(col1 - 48) * 4 - 3], stack_undo_value);
+
+
+                maxcolsize[col1 - 48]--;
+
+                k--;
+            }
+            else if(isalpha(col1) && (col1 == 85 || col1 == 117)) ///undo
+            {
+
+                push2(pop1(stack_undo), stack_redo);
+                push2_value(pop1_value(stack_undo_value), stack_redo_value);
+
+                push2(pop1(stack_undo), stack_redo);
+                push2_value(pop1_value(stack_undo_value), stack_redo_value);
+
+                push2(pop1(stack_undo), stack_redo);
+                push2_value(pop1_value(stack_undo_value), stack_redo_value);
+
+                for(int i = 1; i < height; i += 2)
+                {
+                    for(int j = 1;(j < width); j++)
+                    {
+                        if((int)&arr[i][j] == (int)stack_redo[0] || (int)&arr[i][j] == (int)stack_redo[2] || (int)&arr[i][j] == (int)stack_redo[1])
+                        {
+                            arr[i][j] = 32;
+
+                            if(j % 4 == 1)
+                            {
+                                 maxcolsize[(int)(j/4.0 + 0.75)]++;
+                            }
+                        }
+                    }
+                }
+                k++;
+
+
+            }
+            else if(isalpha(col1) && (col1 == 82 || col1 == 114)) ///redo
+            {
+
+                push1(pop2(stack_redo), stack_undo);
+                push1_value(pop2_value(stack_redo_value), stack_undo_value);
+
+                push1(pop2(stack_redo), stack_undo);
+                push1_value(pop2_value(stack_redo_value), stack_undo_value);
+
+                push1(pop2(stack_redo), stack_undo);
+                push1_value(pop2_value(stack_redo_value), stack_undo_value);
+
+                for(int i = 1; i < height; i += 2)
+                {
+                    for(int j = 1;(j < width); j++)
+                    {
+                        if((int)&arr[i][j] == (int)stack_undo[0])
+                        {
+                            arr[i][j] = stack_undo_value[0];
+
+                            if(j % 4 == 1)
+                            {
+                                maxcolsize[(int)(j/4.0 + 0.75)]--;
+                            }
+                        }
+                        else if((int)&arr[i][j] == (int)stack_undo[1])
+                        {
+                            arr[i][j] = stack_undo_value[1];
+
+                            if(j % 4 == 1)
+                            {
+                                maxcolsize[(int)(j/4.0 + 0.75)]--;
+                            }
+                        }
+                        else if((int)&arr[i][j] == (int)stack_undo[2])
+                        {
+                            arr[i][j] = stack_undo_value[2];
+
+                            if(j % 4 == 1)
+                            {
+                                maxcolsize[(int)(j/4.0 + 0.75)]--;
+                            }
+                        }
+                    }
+                }
+                k--;
+            }
+            else
+            {
+                printf("\n Enter a valid input.\n");
+                turn --;
+            }
+
+            printboard(height, width, arr);
 
             check_score(height, width, arr, 1);
 
             clock_t end = clock();    // defining end time
+
             display_time(start, end); // display the time
 
-            maxcolsize[col1]--;
-
-            turn++; // increase turns
+            turn++;
         }
-        else
+        else //////////////////////////////////////////PLAYER 2 TURN
         {
+            char str1[1] = {0};
+            int ch1, n1 = 0;
 
-            printf("\nplayer2, choose column from 1 to %d:", column);
-            scanf("%d", &col2);
+            printf("\nplayer2, choose column from 1 to %d (u for undo, r for redo, s for save):\n", column);
 
-            while (maxcolsize[col2] < 1 || col2 > column || col2 < 1)
+            fflush(stdin);
+
+            while ((ch1 = getchar()) != 10 && n1 < 1)
             {
-                printf("this column is no longer valid\n");
-                printf("please choose another one: ");
-                scanf("%d", &col2);
+
+                if (ch1 != 32)
+                {
+                    if (isdigit(ch1))
+                    {
+                        str1[n1] = ch1;
+                        n1++;
+                    }
+                    else if (isalpha(ch1))
+                    {
+                        str1[n1] = ch1;
+                        n1++;
+                    }
+                }
+
+            }
+            col2 = str1[0];
+
+            if(isalpha(col2) && (col2 == 83 || col2 == 115)) ///to save the game
+            {
+                save1( k, turn , column, height , width ,arr[height][width], maxcolsize[column+1]);
+                turn --;
+            }
+            else if(isdigit(col2) && (col2 - 48 > column || col2 - 48 < 1 || maxcolsize[col2 - 48] < 1)) ///validate player 2 choice
+            {
+                printf("This column is no longer valid\n");
+                turn--;
+            }
+            else if(isalpha(col2) && first2 == -1 && (col2 == 82 || col2 == 114)) /// if user exceeds number of possible redos
+            {
+                printf("You can not redo once more.\n");
+                turn--;
+            }
+            else if(isalpha(col2) && first1 == -1 && (col2 == 85 || col2 == 117)) ///if user exceeds number of possible undos
+            {
+                printf("You can not undo once more.\n");
+                turn--;
+            }
+            else if(isdigit(col2) && col2 - 48 >= 1 && col2 - 48 <= column) ///playing normally
+            {
+                if(first2 != -1)
+                {
+                    first2 = -1;
+                    first_value2 = -1;
+                }
+
+                arr[maxcolsize[col2 - 48] * 2 -1][(col2 - 48)* 4 - 1] = -1; // if player 1 choose a column the row index of it will start from height and will be decreased till zero
+                push1(&arr[maxcolsize[col2 - 48] * 2 -1][(col2 - 48) * 4 - 1], stack_undo);
+                push1_value(arr[maxcolsize[col2 - 48] * 2 -1][(col2 - 48) * 4 - 1], stack_undo_value);
+
+                arr[maxcolsize[col2 - 48] * 2 -1][(col2 - 48)* 4 - 2] = -1;
+                push1(&arr[maxcolsize[col2 - 48] * 2 -1][(col2 - 48) * 4 - 2], stack_undo);
+                push1_value(arr[maxcolsize[col2 - 48] * 2 -1][(col2 - 48) * 4 - 2], stack_undo_value);
+
+                arr[maxcolsize[col2 - 48] * 2 -1][(col2 - 48)* 4 - 3] = -1;
+                push1(&arr[maxcolsize[col2 - 48] * 2 -1][(col2 - 48) * 4 - 3], stack_undo);
+                push1_value(arr[maxcolsize[col2 - 48] * 2 -1][(col2 - 48) * 4 - 3], stack_undo_value);
+
+                maxcolsize[col2 - 48]--;
+
+                k--;
+
+            }
+            else if(isalpha(col2) && (col2 == 85 || col2 == 117)) ///undo
+            {
+
+
+                push2(pop1(stack_undo), stack_redo);
+                push2_value(pop1_value(stack_undo_value), stack_redo_value);
+
+                push2(pop1(stack_undo), stack_redo);
+                push2_value(pop1_value(stack_undo_value), stack_redo_value);
+
+                push2(pop1(stack_undo), stack_redo);
+                push2_value(pop1_value(stack_undo_value), stack_redo_value);
+
+                for(int i = 1; i < height; i += 2)
+                {
+                    for(int j = 1;(j < width); j++)
+                    {
+
+                        if((int)&arr[i][j] == (int)stack_redo[0] || (int)&arr[i][j] == (int)stack_redo[2] || (int)&arr[i][j] == (int)stack_redo[1])
+                        {
+                            arr[i][j] = 32;
+                            if(j % 4 == 1)
+                            {
+                                maxcolsize[(int)(j/4.0 + 0.75)]++;
+                            }
+                        }
+                    }
+                }
+                k++;
+
             }
 
-            arr[maxcolsize[col2] * 2 - 1][col2 * 4 - 3] = -1;
-            arr[maxcolsize[col2] * 2 - 1][col2 * 4 - 2] = -1;
-            arr[maxcolsize[col2] * 2 - 1][col2 * 4 - 1] = -1;
+            else if(isalpha(col2) && (col2 == 82 || col2 == 114)) ///redo
+            {
+                push1(pop2(stack_redo), stack_undo);
+                push1_value(pop2_value(stack_redo_value), stack_undo_value);
+
+                push1(pop2(stack_redo), stack_undo);
+                push1_value(pop2_value(stack_redo_value), stack_undo_value);
+
+                push1(pop2(stack_redo), stack_undo);
+                push1_value(pop2_value(stack_redo_value), stack_undo_value);
+
+
+                for(int i = 1; i < height; i += 2)
+                {
+                    for(int j = 1;(j < width); j++)
+                    {
+                        if((int)&arr[i][j] == (int)stack_undo[0])
+                        {
+                            arr[i][j] = stack_undo_value[0]; ///need some edit !!!
+
+                            if(j % 4 == 1)
+                            {
+                                maxcolsize[(int)(j/4.0 + 0.75)]--;
+                            }
+                        }
+                        else if((int)&arr[i][j] == (int)stack_undo[1])
+                        {
+                            arr[i][j] = stack_undo_value[1];
+
+                            if(j % 4 == 1)
+                            {
+                                maxcolsize[(int)(j/4.0 + 0.75)]--;
+                            }
+                        }
+                        else if((int)&arr[i][j] == (int)stack_undo[2])
+                        {
+                            arr[i][j] = stack_undo_value[2];
+
+                            if(j % 4 == 1)
+                            {
+                                maxcolsize[(int)(j/4.0 + 0.75)]--;
+                            }
+                        }
+                    }
+                }
+                k--;
+            }
+            else
+            {
+                printf("\n Enter a valid input\n");
+                turn --;
+            }
 
             printboard(height, width, arr);
 
             check_score(height, width, arr, -1);
 
             clock_t end = clock();    // defining end time
-            display_time(start, end); // display the time
 
-            maxcolsize[col2]--;
+            display_time(start, end); // display the time
 
             turn++;
         }
-
-        k--; // decrease k till zero which will indicate that board is complete
     }
 }
 
@@ -847,3 +1163,272 @@ int diagonal_check_45(int height, int width, int arr[height][width], int xo, int
 
     return count;
 }
+void save1(int k,int turn ,int column,int height , int width , int arr[height][width],int maxcolsize[column+1])
+{
+    int i,j;
+    FILE *out; ///in load out write
+
+   out=fopen("saving data1","w");
+   /*
+   fwrite(&height,sizeof(height),1,out);
+   fwrite(&width,sizeof(width),1,out);
+   fwrite(&k,sizeof(k),1,out);
+   fwrite(&turn,sizeof(turn),1,out);
+   */
+   fprintf(out,"%d",height);
+    fprintf(out,"%d",width);
+     fprintf(out,"%d",k);
+      fprintf(out,"%d",turn);
+/*
+  for(i=0;i<height;i++)
+  {
+      for(j=0;j<width;j++)
+      {
+          fprintf(out,"%d",arr[i][j]);
+      }
+  }
+
+  for(i=0;i<column+1;i++)
+  {
+      fprintf(out,"%d",maxcolsize[i]);
+  }
+*/
+    fclose(out);
+
+}
+void save2(int k,int turn ,int column,int height , int width , int arr[height][width],int maxcolsize[column+1])
+{
+    int i,j;
+    FILE *out; ///in load out write
+
+   out=fopen("saving data2","w");
+   /*
+   fwrite(&height,sizeof(height),1,out);
+   fwrite(&width,sizeof(width),1,out);
+   fwrite(&k,sizeof(k),1,out);
+   fwrite(&turn,sizeof(turn),1,out);
+   */
+   fprintf(out,"%d",height);
+    fprintf(out,"%d",width);
+     fprintf(out,"%d",k);
+      fprintf(out,"%d",turn);
+/*
+  for(i=0;i<height;i++)
+  {
+      for(j=0;j<width;j++)
+      {
+          fprintf(out,"%d",arr[i][j]);
+      }
+  }
+
+  for(i=0;i<column+1;i++)
+  {
+      fprintf(out,"%d",maxcolsize[i]);
+  }
+*/
+    fclose(out);
+
+}
+
+void save3(int k,int turn ,int column,int height , int width , int arr[height][width],int maxcolsize[column+1])
+{
+    int i,j;
+    FILE *out; ///in load out write
+
+   out=fopen("saving data3","w");
+   /*
+   fwrite(&height,sizeof(height),1,out);
+   fwrite(&width,sizeof(width),1,out);
+   fwrite(&k,sizeof(k),1,out);
+   fwrite(&turn,sizeof(turn),1,out);
+   */
+   fprintf(out,"%d",height);
+    fprintf(out,"%d",width);
+     fprintf(out,"%d",k);
+      fprintf(out,"%d",turn);
+/*
+  for(i=0;i<height;i++)
+  {
+      for(j=0;j<width;j++)
+      {
+          fprintf(out,"%d",arr[i][j]);
+      }
+  }
+
+  for(i=0;i<column+1;i++)
+  {
+      fprintf(out,"%d",maxcolsize[i]);
+  }
+*/
+    fclose(out);
+
+}
+
+// undo stack
+
+void push1(int *ptr, int *stack_undo[])
+{
+    first1 += 1;
+    for (int i = first1; i > 0; i--)
+    {
+        stack_undo[i] = stack_undo[i - 1];
+    }
+    stack_undo[0] = ptr;
+}
+
+int *pop1(int *stack_undo[])
+{
+    if (isEmpty1())
+    {
+        // stack under flow ////Dont do the undo
+    }
+    else
+    {
+
+        int value = stack_undo[0];
+
+        for (int i = 0; i < first1; i++)
+        {
+            stack_undo[i] = stack_undo[i + 1];
+        }
+        first1--;
+        return value;
+    }
+}
+
+int isEmpty1()
+{
+    if (first1 == -1)
+    {
+        return 1;
+    }
+    return 0;
+}
+
+// redo stack
+
+void push2(int *ptr, int *stack_redo[])
+{
+    first2 += 1;
+    for (int i = first2; i > 0; i--)
+    {
+        stack_redo[i] = stack_redo[i - 1];
+    }
+    stack_redo[0] = ptr;
+}
+
+int *pop2(int *stack_redo[])
+{
+    if (isEmpty2())
+    {
+        // stack under flow ////Dont do the Redo
+    }
+    else
+    {
+
+        int value = stack_redo[0];
+
+        for (int i = 0; i < first2; i++)
+        {
+            stack_redo[i] = stack_redo[i + 1];
+        }
+        first2--;
+        return value;
+    }
+}
+
+int isEmpty2()
+{
+    if (first2 == -1)
+    {
+        return 1;
+    }
+    return 0;
+}
+
+
+//undo stack_value
+
+
+
+void push1_value(int x, int stack_undo[])
+{
+    first_value1 += 1;
+    for (int i = first_value1; i > 0; i--)
+    {
+        stack_undo[i] = stack_undo[i - 1];
+    }
+    stack_undo[0] = x;
+}
+
+int pop1_value(int stack_undo[])
+{
+    if (isEmpty1_value())
+    {
+        // stack under flow ////Dont do the undo
+    }
+    else
+    {
+
+        int value = stack_undo[0];
+
+        for (int i = 0; i < first_value1; i++)
+        {
+            stack_undo[i] = stack_undo[i + 1];
+        }
+        first_value1--;
+        return value;
+    }
+}
+
+int isEmpty1_value()
+{
+    if (first_value1 == -1)
+    {
+        return 1;
+    }
+    return 0;
+}
+
+// redo stack
+
+void push2_value(int x, int stack_redo[])
+{
+    first_value2 += 1;
+    for (int i = first_value2; i > 0; i--)
+    {
+        stack_redo[i] = stack_redo[i - 1];
+    }
+
+    stack_redo[0] = x;
+}
+
+int pop2_value(int stack_redo[])
+{
+    if (isEmpty2_value())
+    {
+        // stack under flow ////Dont do the Redo
+    }
+    else
+    {
+
+        int value = stack_redo[0];
+
+        for (int i = 0; i < first2; i++)
+        {
+            stack_redo[i] = stack_redo[i + 1];
+        }
+        first_value2--;
+        return value;
+    }
+}
+
+int isEmpty2_value()
+{
+    if (first_value2 == -1)
+    {
+        return 1;
+    }
+    return 0;
+}
+
