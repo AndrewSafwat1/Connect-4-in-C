@@ -862,7 +862,7 @@ void play_display(int row, int column, int arr[row * 2 + 1][column * 4 + 1], int
                 }
                 k--;
             }
-            else if (isalpha(col1) && (col1 == 88 || col1 == 120))
+            else if (isalpha(col1) && (col1 == 88 || col1 == 120)) //exit and save
             {
                 printf("\nDo you want to save?(y/n): \n");
                 int save_check = getch();
@@ -901,7 +901,8 @@ void play_display(int row, int column, int arr[row * 2 + 1][column * 4 + 1], int
                 }
                 else
                 {
-                    turn--;
+                    system("cls");
+                    main();
                 }
             }
             else
@@ -909,6 +910,11 @@ void play_display(int row, int column, int arr[row * 2 + 1][column * 4 + 1], int
                 printf("\n Enter a valid input.\n");
                 turn--;
             }
+///New lines -> sleep & system cls
+
+            Sleep(500);
+
+            system("cls");
 
             printboard(height, width, arr);
 
@@ -1155,7 +1161,8 @@ void play_display(int row, int column, int arr[row * 2 + 1][column * 4 + 1], int
                 }
                 else
                 {
-                    turn--;
+                    system("cls");
+                    main();
                 }
             }
             else
@@ -1163,6 +1170,11 @@ void play_display(int row, int column, int arr[row * 2 + 1][column * 4 + 1], int
                 printf("\n Enter a valid input\n");
                 turn--;
             }
+///New lines -> sleep & system cls
+
+            Sleep(500);
+
+            system("cls");
 
             printboard(height, width, arr);
             player1 = check_score(height, width, arr, 1);
@@ -1747,7 +1759,7 @@ void play_display_with_computer(int row, int column, int arr[row * 2 + 1][column
                 turn++;
                 k -= 2;
             }
-            else if (isalpha(col1) && (col1 == 88 || col1 == 120))
+            else if (isalpha(col1) && (col1 == 88 || col1 == 120))  ///to save and exit
             {
                 printf("\nDo you want to save?(y/n): ");
                 int save_check = getchar();
@@ -1786,7 +1798,8 @@ void play_display_with_computer(int row, int column, int arr[row * 2 + 1][column
                 }
                 else
                 {
-                    turn--;
+                    system("cls");
+                    main();
                 }
             }
             else

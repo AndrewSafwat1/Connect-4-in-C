@@ -47,14 +47,23 @@ progress: implemented the scores checking functions
  collaborator name: Andrew Safwat
  progress: adjusted the display function for more beautiful appearance
  	   PROBLEMS: sometimes computer AI ignores some columns.
-	   adjusted the score checking functions in order to fit with the new display function
+	   SOLVED: adjusted the score checking functions in order to fit with the new display function
 	   game needs more testing
 
 date: 2022 - 12 - 28
 collaborator name: Mahmoud Abdelghany
-progress: implemented save function, and prototyping the load function
+progress: implemented save function, and prototyping the load function, 
+	  SOLVED: AI problem
 
 date: 2022 - 12 - 29
 collaborator name: Andrew Safwat
 progress: implemented undo and redo functions for multiplayer game mode, still working on undo and redo for computer.
 
+date: 2022 - 12 - 31
+collaborator name: Mahmoud Abdelghany 
+progress: finished save, load and top scores functions
+
+date: 2022 - 12 - 31
+collaborator name: Andrew Safwat 
+progress: finished the default configuaration files, finished undo and redo for computer and color for each player is displayed
+	  SOLVED: handled all user inputs along the game, appearance of all players scores for every move.
