@@ -3,7 +3,7 @@
 
 <div align="center">
     <img src = "connect4.PNG"/>
-    <p>Figure 1:  example on connect four of 7 x 6 board</p>
+    <p>Example on connect four of 7 x 6 board</p>
 </div>
 
 
