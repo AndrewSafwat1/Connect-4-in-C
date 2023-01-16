@@ -1,5 +1,5 @@
 # connect4_game
-**The final project on programming in C, CSED level 1 - first semester** 
+**The final project on programming in C, CSED level 1 - first semester**
 
 <div align="center">
     <img src = "connect4.PNG"/>
@@ -24,3 +24,7 @@
 ## 4. Configuration file is the settings for changing the display of the game:  
 - You can customize the number of rows and columns you want by changing the value between height and width tags respectively!  
 - You can also customize the number of ranks that appear in top scores by changing the value between highscores tags.
+---
+### Created by:  
+- Mahmoud Abdelghany
+- Andrew Safwat
