@@ -18,7 +18,7 @@
 ---
 
 ## 3. In order to play the game:  
-- Download the .zip file extension ("connect4.zip").
+- Download the .zip file extension [connect4.zip](connect4.zip).
 - Or use git clone.
 ---
 ## 4. Configuration file is the settings for changing the display of the game:  
