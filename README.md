@@ -19,7 +19,7 @@
 
 ## 3. In order to play the game:  
 - Download the .zip file extension [connect4.zip](connect4.zip).
-- Or type in terminal (after you download git):  
+- Or type in terminal (after you download [git](https://git-scm.com/downloads)):  
 
         git clone https://github.com/AndrewSafwat1/connect4_game.git
 ---
