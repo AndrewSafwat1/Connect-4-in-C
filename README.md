@@ -1,9 +1,11 @@
 # connect4_game
 **The final project on programming in C, CSED level 1 - first semester** 
-<p style="text-align: center;">
+
+<div align="center">
     <img src = "connect4.PNG"/>
-</p>  
-<p style="text-align: center;">Figure 1:  example on connect four of 7 x 6 board</p>
+    <p>Figure 1:  example on connect four of 7 x 6 board</p>
+</div>
+
 
 
 ## 1. Game Description  
