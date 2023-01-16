@@ -46,8 +46,8 @@ typedef struct
 
 } memory;
 
-void sortscore(FILE *p, int score); /// new for top scores
-void printscores(FILE *P, int x);   /// new
+void sortscore(FILE *p, int score); 
+void printscores(FILE *P, int x);   
 
 int first_value1 = -1; ///
 int first_value2 = -1;
@@ -129,7 +129,7 @@ int main()
             int *stack_undo[row * column * 3];
             int *stack_redo[row * column * 3];
 
-            int stack_undo_value[row * column * 3]; /// new
+            int stack_undo_value[row * column * 3]; 
             int stack_redo_value[row * column * 3];
 
             width = column * 4 + 1;
@@ -781,6 +781,8 @@ void play_display(int row, int column, int arr[row * 2 + 1][column * 4 + 1], int
                 arr[maxcolsize[col1] * 2 - 1][(col1)*4 - 3] = 1;
                 push1(&arr[maxcolsize[col1] * 2 - 1][(col1)*4 - 3], stack_undo);
                 push1_value(arr[maxcolsize[col1] * 2 - 1][(col1)*4 - 3], stack_undo_value);
+
+
 
                 maxcolsize[col1]--;
 
