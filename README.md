@@ -17,13 +17,13 @@
 - The  goal  of  the  game  is  to  connect  connect-four  discs  of  the  same  color  next  to  each  othervertically, horizontally, or diagonally as you can.  The board may be of any size.  Each player is assigned a random different color.Scoreis  calculated  based  on  the  number  of  connected  fours.   The  game  ends  when  the board is full.  The winner is the player with the highest score.The map is a two dimensional grid where it has no discs at all.  Each player can select a column to drop a disc and the players should connect four discs to win.
 ---
 
-## 3. In order to play the game:  
+## 3. In order to play the game  
 - Download the .zip file extension [connect4.zip](connect4.zip).
 - Or type in terminal (after you download and setup <a href="https://git-scm.com/downloads" target="_blank">git</a>):  
 
         git clone https://github.com/AndrewSafwat1/connect4_game.git
 ---
-## 4. Configuration file is the settings for changing the display of the game:  
+## 4. Configuration file is the settings for changing the display of the game  
 - You can customize the number of rows and columns you want by changing the value between height and width tags respectively!  
 - You can also customize the number of ranks that appear in top scores by changing the value between highscores tags.
 ---
